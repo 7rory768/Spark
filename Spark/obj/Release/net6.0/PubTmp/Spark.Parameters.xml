@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<parameters>
-  <parameter name="IIS Web Application Name" description="" value="roryskipper.ca" tags="IisApp">
-    <parameterEntry kind="ProviderPath" scope="IisApp" match="^D:\\School\\Year\ 4\ -\ Semester\ 2\\CPSC\ 471\\Final\ Project\\Spark\\obj\\Release\\net6\.0\\PubTmp\\Out\\$" />
-  </parameter>
-</parameters>

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Spark.Models;
 
 namespace Spark.Controllers
 {
