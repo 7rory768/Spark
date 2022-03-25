@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Files\\Coding\\School\\Spark\\Spark\\Spark.csproj": {}
+    "D:\\School\\Year 4 - Semester 2\\CPSC 471\\Final Project\\Spark\\Spark.csproj": {}
   },
   "projects": {
-    "D:\\Files\\Coding\\School\\Spark\\Spark\\Spark.csproj": {
+    "D:\\School\\Year 4 - Semester 2\\CPSC 471\\Final Project\\Spark\\Spark.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Files\\Coding\\School\\Spark\\Spark\\Spark.csproj",
+        "projectUniqueName": "D:\\School\\Year 4 - Semester 2\\CPSC 471\\Final Project\\Spark\\Spark.csproj",
         "projectName": "Spark",
-        "projectPath": "D:\\Files\\Coding\\School\\Spark\\Spark\\Spark.csproj",
-        "packagesPath": "C:\\Users\\Rory\\.nuget\\packages\\",
-        "outputPath": "D:\\Files\\Coding\\School\\Spark\\Spark\\obj\\",
+        "projectPath": "D:\\School\\Year 4 - Semester 2\\CPSC 471\\Final Project\\Spark\\Spark.csproj",
+        "packagesPath": "C:\\Users\\rorys\\.nuget\\packages\\",
+        "outputPath": "D:\\School\\Year 4 - Semester 2\\CPSC 471\\Final Project\\Spark\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Rory\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\rorys\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -40,6 +40,28 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[8.0.28, )"
+            },
+            "MySqlConnector": {
+              "target": "Package",
+              "version": "[2.1.8, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.2.3, )"
@@ -63,7 +85,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }
