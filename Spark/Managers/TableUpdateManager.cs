@@ -12,21 +12,10 @@ namespace Spark.Managers
 
             string query = @"CREATE TABLE
 IF
-	NOT EXISTS `users` (
-		username VARCHAR ( 255 ) PRIMARY KEY,
-		fName VARCHAR ( 255 ) NOT NULL,
-		lName VARCHAR ( 255 ),
-		`password` VARCHAR ( 255 ) NOT NULL,
-		`email` VARCHAR ( 255 ),
-		dateCreated DATE NOT NULL,
-	jobType VARCHAR ( 64 ));
+	NOT EXISTS `users` ( username VARCHAR ( 255 ) PRIMARY KEY, fName VARCHAR ( 255 ) NOT NULL, lName VARCHAR ( 255 ), `password` VARCHAR ( 255 ) NOT NULL, `email` VARCHAR ( 255 ), dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, jobType VARCHAR ( 64 ) NOT NULL );
 CREATE TABLE
 IF
-	NOT EXISTS `rewards` (
-		username VARCHAR ( 255 ),
-		numPoints INT NOT NULL,
-		dateGiven TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY ( username ) REFERENCES users ( username ));
+	NOT EXISTS `rewards` ( username VARCHAR ( 255 ) NOT NULL, numPoints INT NOT NULL, dateGiven TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( username ) );
 CREATE TABLE
 IF
 	NOT EXISTS `teams` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR ( 255 ), `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) );
@@ -59,7 +48,8 @@ IF
 	NOT EXISTS `assigned_to` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), PRIMARY KEY ( projectId, listName, taskName, username ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ) );
 CREATE TABLE
 IF
-	NOT EXISTS `comments` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( projectId, listName, taskName ) );";
+	NOT EXISTS `comments` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( projectId, listName, taskName ) );
+";
 
 
             using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
