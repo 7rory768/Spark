@@ -20,7 +20,7 @@ namespace DatabaseLibrary.Providers
         /// Uses the connection string to connect to the database.
         /// </summary>
         public MySqlDbContext(string connectionString)
-            : base (connectionString)
+            : base(connectionString)
         {
         }
 
@@ -42,7 +42,7 @@ namespace DatabaseLibrary.Providers
 
             try
             {
-                
+
                 // Open connection to database
                 connection.Open();
 
@@ -68,7 +68,7 @@ namespace DatabaseLibrary.Providers
         /// </summary>
         /// <param name="message">A detailed error message stating the reason when it fails.</param>
         /// <returns>States the number of rows affected by the command.</returns>
-        public override int ExecuteNonQueryCommand(string commandText, Dictionary<string, object> parameters, out string message)
+        public override int ExecuteNonQueryCommand(string commandText, Dictionary<string, object>? parameters, out string message)
         {
             // Create a new connection
             MySqlConnection connection = new MySqlConnection(ConnectionString);
@@ -77,6 +77,8 @@ namespace DatabaseLibrary.Providers
             {
                 // Open connection to database
                 connection.Open();
+
+                if (parameters == null) parameters = new Dictionary<string, object>();
 
                 // Prepare paramters
                 List<MySqlParameter> parameterList = new List<MySqlParameter>();
@@ -110,7 +112,7 @@ namespace DatabaseLibrary.Providers
         /// </summary>
         /// <param name="message">A detailed error message stating the reason when it fails.</param>
         /// <returns>Datatabe with all the rows that are retrieved.</returns>
-        public override DataTable ExecuteDataQueryCommand(string commandText, Dictionary<string, object> parameters, out string message)
+        public override DataTable ExecuteDataQueryCommand(string commandText, Dictionary<string, object>? parameters, out string message)
         {
             // Create a new connection
             MySqlConnection connection = new MySqlConnection(ConnectionString);
@@ -119,6 +121,8 @@ namespace DatabaseLibrary.Providers
             {
                 // Open connection to database
                 connection.Open();
+
+                if (parameters == null) parameters = new Dictionary<string, object>();
 
                 // Prepare paramters
                 List<MySqlParameter> parameterList = new List<MySqlParameter>();
@@ -154,7 +158,7 @@ namespace DatabaseLibrary.Providers
         /// </summary>
         /// <param name="message">A detailed error message stating the reason when it fails.</param>
         /// <returns>States the number of rows affected by the command.</returns>
-        public override int ExecuteNonQueryProcedure(string procedure, Dictionary<string, object> parameters, out string message)
+        public override int ExecuteNonQueryProcedure(string procedure, Dictionary<string, object>? parameters, out string message)
         {
             // Create a new connection
             MySqlConnection connection = new MySqlConnection(ConnectionString);
@@ -163,6 +167,8 @@ namespace DatabaseLibrary.Providers
             {
                 // Open connection to database
                 connection.Open();
+
+                if (parameters == null) parameters = new Dictionary<string, object>();
 
                 // Prepare paramters
                 List<MySqlParameter> parameterList = new List<MySqlParameter>();
@@ -197,7 +203,7 @@ namespace DatabaseLibrary.Providers
         /// </summary>
         /// <param name="message">A detailed error message stating the reason when it fails.</param>
         /// <returns>Datatabe with all the rows that are retrieved.</returns>
-        public override DataTable ExecuteDataQueryProcedure(string procedure, Dictionary<string, object> parameters, out string message)
+        public override DataTable ExecuteDataQueryProcedure(string procedure, Dictionary<string, object>? parameters, out string message)
         {
             // Create a new connection
             MySqlConnection connection = new MySqlConnection(ConnectionString);
@@ -206,6 +212,8 @@ namespace DatabaseLibrary.Providers
             {
                 // Open connection to database
                 connection.Open();
+
+                if (parameters == null) parameters = new Dictionary<string, object>();
 
                 // Prepare paramters
                 List<MySqlParameter> parameterList = new List<MySqlParameter>();

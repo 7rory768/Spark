@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webservice", "Spark\Webservice.csproj", "{20A8C910-E176-4D5C-A9C1-75BD8951EDDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spark", "Spark\Spark.csproj", "{20A8C910-E176-4D5C-A9C1-75BD8951EDDC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A1CB3C96-85E4-4050-BD9C-781C1B1AA77F} = {A1CB3C96-85E4-4050-BD9C-781C1B1AA77F}
 		{933F31E9-01EC-4ADB-85E3-518C23076951} = {933F31E9-01EC-4ADB-85E3-518C23076951}

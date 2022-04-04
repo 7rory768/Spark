@@ -1,18 +1,16 @@
 ﻿using MySql.Data.MySqlClient;
+using DatabaseLibrary.Core;
 
-namespace Spark.Managers
+namespace DatabaseLibrary.Managers
 {
     public class TableUpdateManager
     {
 
-        public static void createTables(IConfiguration _configuration)
+        public static void createTables(DbContext dbContext)
         {
-            string sqlDataSource = _configuration.GetConnectionString("Default");
-            MySqlDataReader myReader;
-
             string query = @"CREATE TABLE
 IF
-	NOT EXISTS `users` ( username VARCHAR ( 255 ) PRIMARY KEY, fName VARCHAR ( 255 ) NOT NULL, lName VARCHAR ( 255 ), `password` VARCHAR ( 255 ) NOT NULL, `email` VARCHAR ( 255 ), dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, jobType VARCHAR ( 64 ) NOT NULL );
+	NOT EXISTS `users` ( username VARCHAR ( 255 ) PRIMARY KEY, fName VARCHAR ( 255 ) NOT NULL, lName VARCHAR ( 255 ), `password` VARCHAR ( 255 ) NOT NULL, `email` VARCHAR ( 255 ), dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, userType VARCHAR ( 32 ) NOT NULL );
 CREATE TABLE
 IF
 	NOT EXISTS `rewards` ( username VARCHAR ( 255 ) NOT NULL, numPoints INT NOT NULL, dateGiven TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( username ) );
@@ -24,7 +22,7 @@ IF
 	NOT EXISTS `team_members` ( `teamId` INT NOT NULL, `username` VARCHAR ( 255 ) NOT NULL, PRIMARY KEY ( teamId, username ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( username ) REFERENCES users ( username ) );
 CREATE TABLE
 IF
-	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0, `dateCreated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) );
+	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) );
 CREATE TABLE
 IF
 	NOT EXISTS `lists` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ), `dateCreated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( `projectId` ) REFERENCES projects ( `id` ) );
@@ -51,19 +49,11 @@ IF
 	NOT EXISTS `comments` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( projectId, listName, taskName ) );
 ";
 
-
-            using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
-            {
-                mycon.Open();
-                using (MySqlCommand mycmd = new MySqlCommand(query, mycon))
-                {
-                    mycmd.ExecuteNonQuery();
-                    mycon.Close();
-                }
-            }
+            string message;
+            dbContext.ExecuteNonQueryCommand(query, null, out message);
         }
 
-        public static void updateTables(IConfiguration _configuration)
+        public static void updateTables(DbContext dbContext)
         {
             // Put table changes here
         }

@@ -1,24 +1,20 @@
 ﻿namespace BusinessLibrary.Models
 {
 
-    public enum UserType
+    public static class UserType
     {
-        EMPLOYEE,
-        MANAGER
-    }
+        public const string EMPLOYEE = "EMPLOYEE";
+        public const string MANAGER = "MANAGER";
 
-    public static class UserTypeExtensions
-    {
-        public static UserType parse(string arg)
+        public static bool isValid(string? arg)
         {
-            return (UserType)Enum.Parse(typeof(UserType), arg);
+            return arg != null && (arg.Equals(EMPLOYEE) || arg.Equals(MANAGER));
         }
-
     }
 
     public class User
     {
-        public User(string username, string fName, string lName, string password, string email, DateTime dateCreated, UserType userType)
+        public User(string username, string fName, string lName, string password, string email, DateTime dateCreated, string userType)
         {
             this.username = username;
             this.fName = fName;
@@ -36,7 +32,7 @@
 
         public string? email { get; set; }
         public DateTime dateCreated { get; set; }
-        public UserType userType { get; set; }
+        public string userType { get; set; }
     }
 
     public class UserDBO
@@ -57,6 +53,6 @@
 
         public string email { get; set; }
         public DateTime dateCreated { get; set; }
-        public UserType userType { get; set; }
+        public string userType { get; set; }
     }
 }

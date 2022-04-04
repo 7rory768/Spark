@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Webservice.ContextHelpers
+namespace Spark.ContextHelpers
 {
     /// <summary>
     /// This class ensures the database is up and ready.

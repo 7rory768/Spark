@@ -14,15 +14,19 @@ namespace DatabaseLibrary.Helpers
         /// <summary>
         /// Adds a new instance into the database.
         /// </summary>
-        public static User Add(string username, string firstName, string? lastName, string password, string? email, UserType userType = UserType.EMPLOYEE, DbContext context, out StatusResponse statusResponse)
+        public static User Add(string username, string firstName, string? lastName, string password, string? email, string userType, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
                 // Validate
-                if (string.IsNullOrEmpty(firstName?.Trim()))
+                if (string.IsNullOrEmpty(username.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a username.");
+                if (string.IsNullOrEmpty(firstName.Trim()))
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a first name.");
-                if (string.IsNullOrEmpty(lastName?.Trim()))
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a last name.");
+                if (string.IsNullOrEmpty(password.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a password.");
+                if (!UserType.isValid(userType))
+                    throw new StatusException(HttpStatusCode.BadRequest, userType + " is not a valid user type.");
 
                 // Generate a new instance
                 User instance = new User
@@ -49,7 +53,7 @@ namespace DatabaseLibrary.Helpers
                     throw new Exception(message);
 
                 // Return value
-                statusResponse = new StatusResponse("Student added successfully");
+                statusResponse = new StatusResponse("User added successfully");
                 return instance;
             }
             catch (Exception exception)
@@ -91,12 +95,12 @@ namespace DatabaseLibrary.Helpers
                                 password: row["password"].ToString(),
                                 email: row["email"].ToString(),
                                 dateCreated: DateTime.Parse(row["dateCreated"].ToString()),
-                                userType: UserTypeExtensions.parse(row["userType"].ToString())
+                                userType: row["userType"].ToString()
                             )
                         );
 
                 // Return value
-                statusResponse = new StatusResponse("Students list has been retrieved successfully.");
+                statusResponse = new StatusResponse("Users list has been retrieved successfully.");
                 return instances;
             }
             catch (Exception exception)
