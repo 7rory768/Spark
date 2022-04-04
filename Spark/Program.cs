@@ -1,11 +1,13 @@
 using Newtonsoft.Json.Serialization;
 using MySqlConnector;
+using Spark.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddCors(c => {
+builder.Services.AddCors(c =>
+{
     c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
@@ -14,10 +16,13 @@ builder.Services.AddControllers();
 
 // Json Seralizer
 
-builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling=Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
     .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
 builder.Services.AddTransient<MySqlConnection>(_ => new MySqlConnection(builder.Configuration["ConnectionStrings:Default"]));
+
+TableUpdateManager.createTables(builder.Configuration);
+TableUpdateManager.updateTables(builder.Configuration);
 
 //builder.Services.AddSwaggerGen(c =>
 //{
