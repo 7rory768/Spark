@@ -76,5 +76,29 @@ namespace Spark.ControllerHelpers
             return response;
         }
 
+        public static ResponseMessage Login(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false) {
+            string username = data["username"].Value<string>();
+            string password = data["password"].Value<string>();
+
+
+            User user = DatabaseLibrary.Helpers.UserHelper.Login(username, password,
+                context, out StatusResponse statusResponse);
+
+            // Get rid of detailed error message (when requested)
+            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError
+                && !includeDetailedErrors)
+                statusResponse.Message = "Something went wrong while retrieving the users";
+
+            // Return response
+            var response = new ResponseMessage
+                (
+                    user != null,
+                    statusResponse.Message,
+                    user
+                );
+            statusCode = statusResponse.StatusCode;
+            return response;
+        }
+
     }
 }

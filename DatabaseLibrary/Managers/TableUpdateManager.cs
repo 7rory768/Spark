@@ -8,12 +8,14 @@ namespace DatabaseLibrary.Managers
 
         public static void createTables(DbContext dbContext)
         {
+            string message;
+
             string query = @"CREATE TABLE
 IF
-	NOT EXISTS `users` ( username VARCHAR ( 255 ) PRIMARY KEY, fName VARCHAR ( 255 ) NOT NULL, lName VARCHAR ( 255 ), `password` VARCHAR ( 255 ) NOT NULL, `email` VARCHAR ( 255 ), dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, userType VARCHAR ( 32 ) NOT NULL );
+	NOT EXISTS `users` ( username VARCHAR ( 255 ) PRIMARY KEY, fName VARCHAR ( 255 ) NOT NULL, lName VARCHAR ( 255 ), `password` VARCHAR ( 255 ) NOT NULL, `email` VARCHAR ( 255 ), dateCreated TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, userType VARCHAR ( 32 ) NOT NULL );
 CREATE TABLE
 IF
-	NOT EXISTS `rewards` ( username VARCHAR ( 255 ) NOT NULL, numPoints INT NOT NULL, dateGiven TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( username ) );
+	NOT EXISTS `rewards` ( username VARCHAR ( 255 ) NOT NULL, numPoints INT NOT NULL, dateGiven TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( username ) );
 CREATE TABLE
 IF
 	NOT EXISTS `teams` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR ( 255 ), `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) );
@@ -22,13 +24,13 @@ IF
 	NOT EXISTS `team_members` ( `teamId` INT NOT NULL, `username` VARCHAR ( 255 ) NOT NULL, PRIMARY KEY ( teamId, username ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( username ) REFERENCES users ( username ) );
 CREATE TABLE
 IF
-	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) );
+	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) );
 CREATE TABLE
 IF
-	NOT EXISTS `lists` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ), `dateCreated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( `projectId` ) REFERENCES projects ( `id` ) );
+	NOT EXISTS `lists` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ), `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( `projectId` ) REFERENCES projects ( `id` ) );
 CREATE TABLE
 IF
-	NOT EXISTS `tasks` ( `projectId` INT NOT NULL, `listName` VARCHAR ( 255 ) NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, description TEXT DEFAULT '', dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, priority INT NOT NULL, deadline DATE DEFAULT NULL, completed BOOLEAN DEFAULT FALSE, completionPoints INT DEFAULT 1, PRIMARY KEY ( projectId, listName, `name` ), FOREIGN KEY ( projectId, listName ) REFERENCES lists ( `projectId`, `name` ) );
+	NOT EXISTS `tasks` ( `projectId` INT NOT NULL, `listName` VARCHAR ( 255 ) NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, description TEXT DEFAULT '', dateCreated TIMESTAMP DEFAULT UTC_TIMESTAMP, priority INT NOT NULL, deadline DATE DEFAULT NULL, completed BOOLEAN DEFAULT FALSE, completionPoints INT DEFAULT 1, PRIMARY KEY ( projectId, listName, `name` ), FOREIGN KEY ( projectId, listName ) REFERENCES lists ( `projectId`, `name` ) );
 CREATE TABLE
 IF
 	NOT EXISTS `labels` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `color` CHAR ( 7 ) NOT NULL, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( projectId ) REFERENCES projects ( id ) );
@@ -46,10 +48,9 @@ IF
 	NOT EXISTS `assigned_to` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), PRIMARY KEY ( projectId, listName, taskName, username ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ) );
 CREATE TABLE
 IF
-	NOT EXISTS `comments` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( projectId, listName, taskName ) );
+	NOT EXISTS `comments` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( projectId, listName, taskName ) );
 ";
 
-            string message;
             dbContext.ExecuteNonQueryCommand(query, null, out message);
         }
 

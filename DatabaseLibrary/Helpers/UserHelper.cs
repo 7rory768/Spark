@@ -11,6 +11,66 @@ namespace DatabaseLibrary.Helpers
 {
     public class UserHelper
     {
+        private static User fromRow(DataRow row) {
+            return new User(
+                            username: row["username"].ToString(),
+                            fName: row["fName"].ToString(),
+                            lName: row["lName"]?.ToString(),
+                            password: row["password"].ToString(),
+                            email: row["email"].ToString(),
+                            dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime(),
+                            userType: row["userType"].ToString()
+                            );
+        }
+
+        public static User? Login(string username, string password, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                // Validate
+                if (string.IsNullOrEmpty(username.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a username.");
+                if (string.IsNullOrEmpty(password.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a password.");
+
+                bool success = false;
+
+                // Add to database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "loginUser",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_username", username },
+                            { "_password", password }
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                DataRow row = table.Rows[0];
+
+                // Return value
+                if (!bool.Parse(row["success"].ToString()))
+                {
+                    statusResponse = new StatusResponse("Incorrect password");
+                    return null;
+                }
+                else
+                {
+                    statusResponse = new StatusResponse("User logged in successfully");
+
+                    return fromRow(row);
+                }
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return null;
+            }
+        }
+
         /// <summary>
         /// Adds a new instance into the database.
         /// </summary>
@@ -87,17 +147,7 @@ namespace DatabaseLibrary.Helpers
                 // Parse data
                 List<User> instances = new List<User>();
                 foreach (DataRow row in table.Rows)
-                    instances.Add(new User
-                            (
-                                username: row["username"].ToString(),
-                                fName: row["fName"].ToString(),
-                                lName: row["lName"].ToString(),
-                                password: row["password"].ToString(),
-                                email: row["email"].ToString(),
-                                dateCreated: DateTime.Parse(row["dateCreated"].ToString()),
-                                userType: row["userType"].ToString()
-                            )
-                        );
+                    instances.Add(fromRow(row));
 
                 // Return value
                 statusResponse = new StatusResponse("Users list has been retrieved successfully.");
