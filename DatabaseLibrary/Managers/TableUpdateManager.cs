@@ -54,6 +54,28 @@ IF
             dbContext.ExecuteNonQueryCommand(query, null, out message);
         }
 
+        public static void createProcedures(DbContext dbContext) {
+			string message;
+
+			string query = @"DROP PROCEDURE IF EXISTS `loginUser`;
+			CREATE PROCEDURE IF NOT EXISTS `loginUser`(IN `_username` varchar(255),IN _password varchar(255))
+			BEGIN
+			DECLARE _actualPassword VARCHAR(255);
+			DECLARE success BOOLEAN;
+
+			SELECT `password` INTO _actualPassword FROM `users` WHERE username = _username;
+			SET success = _actualPassword = _password;
+
+			IF success THEN
+				SELECT users.*, success FROM `users` WHERE username = _username;
+			ELSE
+				SELECT success;
+			END IF;
+			END;";
+
+			dbContext.ExecuteNonQueryCommand(query, null, out message);
+		}
+
         public static void updateTables(DbContext dbContext)
         {
             // Put table changes here

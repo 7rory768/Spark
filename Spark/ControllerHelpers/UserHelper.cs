@@ -27,7 +27,7 @@ namespace Spark.ControllerHelpers
             string userType = data.GetValue("userType").Value<string>();
 
             // Add instance to database
-            var dbInstance = DatabaseLibrary.Helpers.UserHelper.Add(username, firstName, lastName, password, email, userType,
+            var dbInstance = DatabaseLibrary.Helpers.UserDBHelper.Add(username, firstName, lastName, password, email, userType,
                 context, out StatusResponse statusResponse);
 
             // Get rid of detailed internal server error message (when requested)
@@ -54,7 +54,7 @@ namespace Spark.ControllerHelpers
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             // Get instances from database
-            var dbInstances = DatabaseLibrary.Helpers.UserHelper.GetCollection(
+            var dbInstances = DatabaseLibrary.Helpers.UserDBHelper.GetCollection(
                 context, out StatusResponse statusResponse);
 
             // Convert to business logic objects
@@ -76,12 +76,13 @@ namespace Spark.ControllerHelpers
             return response;
         }
 
-        public static ResponseMessage Login(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false) {
+        public static ResponseMessage Login(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
             string username = data["username"].Value<string>();
             string password = data["password"].Value<string>();
 
 
-            User user = DatabaseLibrary.Helpers.UserHelper.Login(username, password,
+            User user = DatabaseLibrary.Helpers.UserDBHelper.Login(username, password,
                 context, out StatusResponse statusResponse);
 
             // Get rid of detailed error message (when requested)

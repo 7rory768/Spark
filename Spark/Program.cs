@@ -50,6 +50,7 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     TableUpdateManager.createTables(scope.ServiceProvider.GetService<DatabaseContextHelper>().DbContext);
+    TableUpdateManager.createProcedures(scope.ServiceProvider.GetService<DatabaseContextHelper>().DbContext);
     TableUpdateManager.updateTables(scope.ServiceProvider.GetService<DatabaseContextHelper>().DbContext);
 }
 

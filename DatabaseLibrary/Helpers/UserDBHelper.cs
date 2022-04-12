@@ -9,9 +9,10 @@ using System.Text;
 
 namespace DatabaseLibrary.Helpers
 {
-    public class UserHelper
+    public class UserDBHelper
     {
-        private static User fromRow(DataRow row) {
+        private static User fromRow(DataRow row)
+        {
             return new User(
                             username: row["username"].ToString(),
                             fName: row["fName"].ToString(),
@@ -52,7 +53,12 @@ namespace DatabaseLibrary.Helpers
                 DataRow row = table.Rows[0];
 
                 // Return value
-                if (!bool.Parse(row["success"].ToString()))
+                if (string.IsNullOrEmpty(row["success"].ToString()))
+                {
+                    statusResponse = new StatusResponse("Unknown user");
+                    return null;
+                }
+                else if (!bool.Parse(row["success"].ToString()))
                 {
                     statusResponse = new StatusResponse("Incorrect password");
                     return null;
