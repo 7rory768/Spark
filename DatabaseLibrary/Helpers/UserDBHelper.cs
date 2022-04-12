@@ -6,11 +6,14 @@ using System.Data;
 using System.Data.Common;
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DatabaseLibrary.Helpers
 {
     public class UserDBHelper
     {
+        private static MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+
         private static User fromRow(DataRow row)
         {
             return new User(
@@ -33,6 +36,21 @@ namespace DatabaseLibrary.Helpers
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a username.");
                 if (string.IsNullOrEmpty(password.Trim()))
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a password.");
+
+                // Check Cache first
+                User user = cache.Get<User>(username);
+
+                if (user != null)
+                {
+                    if (user.password != password)
+                    {
+                        statusResponse = new StatusResponse("Incorrect password");
+                        return null;
+                    }
+
+                    statusResponse = new StatusResponse("User logged in successfully");
+                    return user;
+                }
 
                 bool success = false;
 
@@ -66,8 +84,7 @@ namespace DatabaseLibrary.Helpers
                 else
                 {
                     statusResponse = new StatusResponse("User logged in successfully");
-
-                    return fromRow(row);
+                    return cache.Set(username, fromRow(row));
                 }
             }
             catch (Exception exception)
@@ -101,26 +118,27 @@ namespace DatabaseLibrary.Helpers
                     );
 
                 // Add to database
-                int rowsAffected = context.ExecuteNonQueryCommand
+                DataTable table = context.ExecuteDataQueryProcedure
                     (
-                        commandText: "INSERT INTO users (username, fName, lName, password, email, userType) values (@username, @fName, @lName, @password, @email, @userType)",
+                        procedure: "createUser",
                         parameters: new Dictionary<string, object>()
                         {
-                            { "@username", instance.username },
-                            { "@fName", instance.fName },
-                            { "@lName", instance.lName },
-                            {"@password", instance.password },
-                            {"@email", instance.email },
-                            {"@userType", instance.userType }
+                            { "_username", instance.username },
+                            { "_fName", instance.fName },
+                            { "_lName", instance.lName },
+                            {"_password", instance.password },
+                            {"_email", instance.email },
+                            {"_userType", instance.userType }
                         },
                         message: out string message
                     );
-                if (rowsAffected == -1)
+
+                if (table == null)
                     throw new Exception(message);
 
                 // Return value
                 statusResponse = new StatusResponse("User added successfully");
-                return instance;
+                return cache.Set(username, fromRow(table.Rows[0]));
             }
             catch (Exception exception)
             {

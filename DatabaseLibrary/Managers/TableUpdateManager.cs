@@ -54,10 +54,11 @@ IF
             dbContext.ExecuteNonQueryCommand(query, null, out message);
         }
 
-        public static void createProcedures(DbContext dbContext) {
-			string message;
+        public static void createProcedures(DbContext dbContext)
+        {
+            List<string> procedures = new List<string>();
 
-			string query = @"DROP PROCEDURE IF EXISTS `loginUser`;
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `loginUser`;
 			CREATE PROCEDURE IF NOT EXISTS `loginUser`(IN `_username` varchar(255),IN _password varchar(255))
 			BEGIN
 			DECLARE _actualPassword VARCHAR(255);
@@ -71,10 +72,32 @@ IF
 			ELSE
 				SELECT success;
 			END IF;
-			END;";
+			END;");
 
-			dbContext.ExecuteNonQueryCommand(query, null, out message);
-		}
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createProject`;
+			CREATE PROCEDURE `createProject`(IN `_teamId` integer,IN `_name` varchar(255),IN `_budget` integer,IN `_mgrUsername` varchar(255))
+			BEGIN
+
+			INSERT INTO `projects` (`teamId`, `name`, `budget`, `mgrUsername`) VALUES (_teamId, _name, _budget, _mgrUsername);
+
+			SELECT * FROM `projects` WHERE projects.id=@@IDENTITY;
+
+			END");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createUser`;
+			PROCEDURE `createUser`(IN `_username` varchar(255),IN `_fName` varchar(255),IN `_lName` varchar(255), IN `_password` VARCHAR(255),IN `_email` VARCHAR(255),IN `_userType` varchar(32))
+			BEGIN
+
+			INSERT INTO `users` (`username`, `fName`, `lName`, `password`, `email`, `userType`) VALUES (_username, _fName, _lName, `_password`, _email, _userType);
+
+			SELECT * FROM `users` WHERE username=_username;
+
+			END;");
+
+            string message;
+            foreach (string query in procedures)
+                dbContext.ExecuteNonQueryCommand(query, null, out message);
+        }
 
         public static void updateTables(DbContext dbContext)
         {
