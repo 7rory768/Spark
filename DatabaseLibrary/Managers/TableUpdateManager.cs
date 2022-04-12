@@ -8,9 +8,9 @@ namespace DatabaseLibrary.Managers
 
         public static void createTables(DbContext dbContext)
         {
-            string message;
+            List<string> queries = new List<string>();
 
-            string query = @"CREATE TABLE
+            queries.Add(@"CREATE TABLE
 IF
 	NOT EXISTS `users` ( username VARCHAR ( 255 ) PRIMARY KEY, fName VARCHAR ( 255 ) NOT NULL, lName VARCHAR ( 255 ), `password` VARCHAR ( 255 ) NOT NULL, `email` VARCHAR ( 255 ), dateCreated TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, userType VARCHAR ( 32 ) NOT NULL );
 CREATE TABLE
@@ -49,9 +49,11 @@ IF
 CREATE TABLE
 IF
 	NOT EXISTS `comments` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ), FOREIGN KEY ( username ) REFERENCES users ( username ), INDEX ( projectId, listName, taskName ) );
-";
+");
 
-            dbContext.ExecuteNonQueryCommand(query, null, out message);
+            string message;
+            foreach (string query in queries)
+                dbContext.ExecuteNonQueryCommand(query, null, out message);
         }
 
         public static void createProcedures(DbContext dbContext)
