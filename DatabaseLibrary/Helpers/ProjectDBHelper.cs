@@ -74,82 +74,38 @@ namespace DatabaseLibrary.Helpers
         /// <summary>
         /// Get all projects the current user can see
         /// </summary>
-        public static IEnumerable<Project> GetAll(string username, DbContext context, out StatusResponse statusResponse)
+        public static List<Project> GetAll(string username, DbContext context, out StatusResponse statusResponse)
         {
+            List<Project> projects = new List<Project>();
+
             try
             {
-                // Validate
 
-
-                // Generate a new instance
-                User instance = new User
-                    (
-                        username, firstName, lastName, password, email, DateTime.Now, userType
-                    );
-
-                // Add to database
-                int rowsAffected = context.ExecuteNonQueryCommand
-                    (
-                        commandText: "INSERT INTO users (username, fName, lName, password, email, userType) values (@username, @fName, @lName, @password, @email, @userType)",
-                        parameters: new Dictionary<string, object>()
-                        {
-                            { "@username", instance.username },
-                            { "@fName", instance.fName },
-                            { "@lName", instance.lName },
-                            {"@password", instance.password },
-                            {"@email", instance.email },
-                            {"@userType", instance.userType }
-                        },
-                        message: out string message
-                    );
-                if (rowsAffected == -1)
-                    throw new Exception(message);
-
-                // Return value
-                statusResponse = new StatusResponse("User added successfully");
-                return instance;
-            }
-            catch (Exception exception)
-            {
-                statusResponse = new StatusResponse(exception);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves a list of instances.
-        /// </summary>
-        public static List<User> GetCollection(
-            DbContext context, out StatusResponse statusResponse)
-        {
-            try
-            {
                 // Get from database
-                DataTable table = context.ExecuteDataQueryCommand
+                DataTable table = context.ExecuteDataQueryProcedure
                     (
-                        commandText: "SELECT * FROM users",
+                        procedure: "getParticipatingProjects",
                         parameters: new Dictionary<string, object>()
                         {
-
+                            { "_username", username },
                         },
                         message: out string message
                     );
                 if (table == null)
                     throw new Exception(message);
 
-                // Parse data
-                List<User> instances = new List<User>();
-                foreach (DataRow row in table.Rows)
-                    instances.Add(fromRow(row));
-
                 // Return value
-                statusResponse = new StatusResponse("Users list has been retrieved successfully.");
-                return instances;
+                statusResponse = new StatusResponse("Got participating projects successfully");
+
+                foreach (DataRow row in table.Rows)
+                    projects.Add(fromRow(row));
+
+                return projects;
             }
             catch (Exception exception)
             {
                 statusResponse = new StatusResponse(exception);
-                return null;
+                return projects;
             }
         }
 

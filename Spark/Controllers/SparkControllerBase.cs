@@ -37,6 +37,8 @@ namespace Spark.Controllers
             Database = database;
         }
 
+        #endregion
+
         protected bool isAuthenticated()
         {
             return Request.Headers.ContainsKey("Authorization");
