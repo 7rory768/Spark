@@ -27,6 +27,43 @@ namespace DatabaseLibrary.Helpers
                             );
         }
 
+        public static User? GetUser(string username, DbContext context)
+        {
+            try
+            {
+                // Validate
+                if (string.IsNullOrEmpty(username.Trim())) return null;
+
+                // Check Cache first
+                User user = cache.Get<User>(username);
+                if (user != null) return user;
+
+                // Get from database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getUser",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_username", username }
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                if (table.Rows.Count == 0)
+                {
+                    cache.Remove(username);
+                    return null;
+                }
+                else return cache.Set(username, fromRow(table.Rows[0]));
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
         public static User? Login(string username, string password, DbContext context, out StatusResponse statusResponse)
         {
             try

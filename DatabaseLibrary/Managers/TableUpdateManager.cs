@@ -94,6 +94,21 @@ IF
 
 			END;");
 
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getUser`;
+			CREATE PROCEDURE IF NOT EXISTS `getUser`(IN `_username` varchar(255))
+			BEGIN
+
+			SELECT * FROM `users` WHERE `username`=_username;
+
+			END;");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getParticipatingProjects`; CREATE PROCEDURE IF NOT EXISTS `getParticipatingProjects`(IN `_username` varchar(255))
+BEGIN
+
+SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS members ON (projects.teamId = members.teamId) WHERE members.username=_username;
+
+END;");
+
             string message;
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out message);

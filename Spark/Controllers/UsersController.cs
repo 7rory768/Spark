@@ -15,40 +15,12 @@ namespace Spark.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : SparkControllerBase
     {
-
-        #region Initialization
-
-        /// <summary>
-        /// Reference to the hosting environment instance added in the Startup.cs.
-        /// </summary>
-        private readonly IWebHostEnvironment HostingEnvironment;
-
-        /// <summary>
-        /// Reference to the app settings helper instance added in the Startup.cs.
-        /// </summary>
-        private readonly AppSettingsHelper AppSettings;
-
-        /// <summary>
-        /// Reference to the database context helper instance added in the Startup.cs.
-        /// </summary>
-        private readonly DatabaseContextHelper Database;
-
-        /// <summary>
-        /// Constructor called by the service provider.
-        /// Using injection to get the arguments.
-        /// </summary>
-        public UsersController(IWebHostEnvironment hostingEnvironment, AppSettingsHelper appSettings,
-            DatabaseContextHelper database)
+        public UsersController(IWebHostEnvironment hostingEnvironment, AppSettingsHelper appSettings, DatabaseContextHelper database) : base(hostingEnvironment, appSettings, database)
         {
-            HostingEnvironment = hostingEnvironment;
-            AppSettings = appSettings;
-            Database = database;
+            // Initalize values in SparkControllerBase
         }
-
-        #endregion
-
 
         // Gets collection.
         [HttpGet]
