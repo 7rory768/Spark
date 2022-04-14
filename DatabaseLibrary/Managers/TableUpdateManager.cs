@@ -110,8 +110,15 @@ BEGIN
 SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS members ON (projects.teamId = members.teamId) WHERE members.username=_username;
 
 END;");
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getParticipatingTeams`; CREATE PROCEDURE IF NOT EXISTS `getParticipatingTeams`(IN `_username` varchar(255))
+BEGIN
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `createLabel`; CREATE PROCEDURE IF NOT EXISTS `createLabel`(IN _projectId INT, IN _name VARCHAR(255), IN _color CHAR(7))
+SELECT teams.* FROM `teams` AS teams INNER JOIN `team_members` AS members ON(teams.id = members.teamId) WHERE members.username = _username;
+
+			END;");
+
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `createLabel`; CREATE PROCEDURE IF NOT EXISTS `createLabel`(IN _projectId INT, IN _name VARCHAR(255), IN _color CHAR(7))
 BEGIN
 
 	INSERT INTO `labels` (projectId, name, color) VALUES (_projectId, _name, _color);
@@ -249,6 +256,15 @@ BEGIN
 	SELECT * from tasks WHERE id=_taskId;
 
 END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `updateUser`; 
+			CREATE PROCEDURE IF NOT EXISTS `updateUser`(IN _username varchar(255),IN _fName varchar(255),IN _lName varchar(255),IN _password VARCHAR(255),IN _email VARCHAR(255))
+			BEGIN
+			UPDATE `users` SET fName = _fName, lName = _lName, `password` = _password, email = _email WHERE username = _username;
+			
+			SELECT * FROM `users` WHERE username = _username;
+
+			END;");
 
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
