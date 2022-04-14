@@ -15,7 +15,7 @@ IF
 	NOT EXISTS `users` ( username VARCHAR ( 255 ) PRIMARY KEY, fName VARCHAR ( 255 ) NOT NULL, lName VARCHAR ( 255 ), `password` VARCHAR ( 255 ) NOT NULL, `email` VARCHAR ( 255 ), dateCreated TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL );
 CREATE TABLE
 IF
-	NOT EXISTS `rewards` ( username VARCHAR ( 255 ) NOT NULL, numPoints INT NOT NULL, dateGiven TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE, INDEX ( username ) );
+	NOT EXISTS `rewards` ( username VARCHAR ( 255 ) NOT NULL, numPoints INT NOT NULL, `teamId` INT NOT NULL, `projectId` INT NOT NULL, dateGiven TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE, FOREIGN KEY ( teamId ) REFERENCES teams ( id ) ON DELETE CASCADE, FOREIGN KEY ( projectId ) REFERENCES projects ( id ) ON DELETE CASCADE, INDEX ( username, teamId, projectId ) );
 CREATE TABLE
 IF
 	NOT EXISTS `teams` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR ( 255 ), `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) ON DELETE CASCADE );
@@ -132,7 +132,7 @@ BEGIN
 
 END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `createList`; CREATE PROCEDURE IF NOT EXISTS `createList`(IN _projectId INT, IN _name VARCHAR(255), IN _position INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createList`; CREATE PROCEDURE IF NOT EXISTS `createList`(IN _projectId INT, IN _name VARCHAR(255), IN _position INT)
 BEGIN
 	
 	INSERT INTO `lists` (projectId, name, position) VALUES (_projectId, _name, _position);
@@ -141,7 +141,7 @@ BEGIN
 
 END;");
 
-			procedures.Add(@"DELETE PROCEDURE IF EXISTS `getLists`; CREATE PROCEDURE IF NOT EXISTS `getLists`(IN _projectId INT)
+            procedures.Add(@"DELETE PROCEDURE IF EXISTS `getLists`; CREATE PROCEDURE IF NOT EXISTS `getLists`(IN _projectId INT)
 BEGIN
 
 	SELECT * FROM `lists` WHERE projectId=_projectId ORDER BY position ASC;
@@ -149,7 +149,7 @@ BEGIN
 END;");
 
 
-			string message;
+            string message;
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out message);
         }
