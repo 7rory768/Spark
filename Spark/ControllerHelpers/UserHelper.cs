@@ -27,20 +27,19 @@ namespace Spark.ControllerHelpers
             string userType = data.GetValue("userType").Value<string>();
 
             // Add instance to database
-            var dbInstance = DatabaseLibrary.Helpers.UserDBHelper.Add(username, firstName, lastName, password, email, userType,
+            var instance = DatabaseLibrary.Helpers.UserDBHelper.Add(username, firstName, lastName, password, email, userType,
                 context, out StatusResponse statusResponse);
 
             // Get rid of detailed internal server error message (when requested)
-            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError
-                && !includeDetailedErrors)
+            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError && !includeDetailedErrors)
                 statusResponse.Message = "Something went wrong while adding a new user.";
 
             // Return response
             var response = new ResponseMessage
                 (
-                    dbInstance != null,
+                    instance != null,
                     statusResponse.Message,
-                    dbInstance
+                    instance
                 );
             statusCode = statusResponse.StatusCode;
             return response;
@@ -54,15 +53,11 @@ namespace Spark.ControllerHelpers
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             // Get instances from database
-            var dbInstances = DatabaseLibrary.Helpers.UserDBHelper.GetCollection(
+            var instances = DatabaseLibrary.Helpers.UserDBHelper.GetCollection(
                 context, out StatusResponse statusResponse);
 
-            // Convert to business logic objects
-            var instances = dbInstances?.ToList();
-
             // Get rid of detailed error message (when requested)
-            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError
-                && !includeDetailedErrors)
+            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError && !includeDetailedErrors)
                 statusResponse.Message = "Something went wrong while retrieving the users";
 
             // Return response
@@ -82,12 +77,10 @@ namespace Spark.ControllerHelpers
             string password = data["password"].Value<string>();
 
 
-            User user = DatabaseLibrary.Helpers.UserDBHelper.Login(username, password,
-                context, out StatusResponse statusResponse);
+            User user = DatabaseLibrary.Helpers.UserDBHelper.Login(username, password, context, out StatusResponse statusResponse);
 
             // Get rid of detailed error message (when requested)
-            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError
-                && !includeDetailedErrors)
+            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError && !includeDetailedErrors)
                 statusResponse.Message = "Something went wrong while retrieving the users";
 
             // Return response

@@ -42,15 +42,11 @@ namespace Spark.ControllerHelpers
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             // Get instances from database
-            var dbInstances = DatabaseLibrary.Helpers.ProjectDBHelper.GetAll(user.username,
+            var instances = DatabaseLibrary.Helpers.ProjectDBHelper.GetAll(user.username,
                 context, out StatusResponse statusResponse);
 
-            // Convert to business logic objects
-            var instances = dbInstances?.ToList();
-
             // Get rid of detailed error message (when requested)
-            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError
-                && !includeDetailedErrors)
+            if (statusResponse.StatusCode == HttpStatusCode.InternalServerError && !includeDetailedErrors)
                 statusResponse.Message = "Something went wrong while retrieving the users";
 
             // Return response
