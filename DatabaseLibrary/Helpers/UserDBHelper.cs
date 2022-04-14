@@ -205,7 +205,7 @@ namespace DatabaseLibrary.Helpers
                 // Parse data
                 List<User> instances = new List<User>();
                 foreach (DataRow row in table.Rows)
-                    fromRow(row);
+                    instances.Add(fromRow(row));
 
                 // Return value
                 statusResponse = new StatusResponse("Users list has been retrieved successfully.");
