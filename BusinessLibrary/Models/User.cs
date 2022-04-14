@@ -1,4 +1,6 @@
-﻿namespace BusinessLibrary.Models
+﻿using Newtonsoft.Json;
+
+namespace BusinessLibrary.Models
 {
 
     public static class UserType
@@ -25,34 +27,19 @@
             this.userType = userType;
         }
 
+        [JsonProperty]
         public string username { get; set; }
+        [JsonProperty]
         public string fName { get; set; }
+        [JsonProperty]
         public string? lName { get; set; }
         public string password { get; set; }
 
+        [JsonProperty]
         public string? email { get; set; }
+        [JsonProperty]
         public DateTime dateCreated { get; set; }
-        public string userType { get; set; }
-    }
-
-    public class UserDBO
-    {
-        public UserDBO(User user)
-        {
-            this.username = user.username;
-            this.fName = user.fName;
-            this.lName = user.lName;
-            this.email = user.email;
-            this.dateCreated = user.dateCreated;
-            this.userType = user.userType;
-        }
-
-        public string username { get; set; }
-        public string fName { get; set; }
-        public string lName { get; set; }
-
-        public string email { get; set; }
-        public DateTime dateCreated { get; set; }
+        [JsonProperty]
         public string userType { get; set; }
     }
 }

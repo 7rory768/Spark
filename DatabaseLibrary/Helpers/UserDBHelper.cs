@@ -10,7 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace DatabaseLibrary.Helpers
 {
-    public class UserDBHelper
+    public class UserDBHelper : DBHelper
     {
         private static MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
 
@@ -31,6 +31,11 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
+                if (isNotAlphaNumeric(username.Trim()))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid project name.");
+                }
+
                 // Validate
                 if (string.IsNullOrEmpty(username.Trim())) return null;
 

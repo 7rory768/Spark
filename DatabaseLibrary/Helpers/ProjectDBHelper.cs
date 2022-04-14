@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DatabaseLibrary.Helpers
 {
-    public class ProjectDBHelper
+    public class ProjectDBHelper : DBHelper
     {
         private static Project fromRow(DataRow row)
         {
@@ -26,9 +26,10 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                // Validate
-                if (string.IsNullOrEmpty(name.Trim()))
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a name.");
+                if (isNotAlphaNumeric(name?.Trim()))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid project name.");
+                }
 
                 bool success = false;
 
@@ -80,6 +81,10 @@ namespace DatabaseLibrary.Helpers
 
             try
             {
+                if (isNotAlphaNumeric(username.Trim()))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username.");
+                }
 
                 // Get from database
                 DataTable table = context.ExecuteDataQueryProcedure

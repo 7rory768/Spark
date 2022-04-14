@@ -1,4 +1,6 @@
-﻿namespace BusinessLibrary.Models
+﻿using Newtonsoft.Json;
+
+namespace BusinessLibrary.Models
 {
     public class Reward
     {
@@ -9,8 +11,11 @@
             this.dateGiven = dateGiven;
         }
 
+        [JsonProperty]
         public string username { get; set; }
+        [JsonProperty]
         public int numPoints { get; set; }
+        [JsonProperty]
         public DateTime dateGiven { get; set; }
     }
 }

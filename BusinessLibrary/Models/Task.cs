@@ -1,4 +1,6 @@
-﻿namespace BusinessLibrary.Models
+﻿using Newtonsoft.Json;
+
+namespace BusinessLibrary.Models
 {
     public class Task
     {
@@ -14,13 +16,21 @@
             this.completed = completed;
         }
 
+        [JsonProperty]
         public int projectId { get; set; }
+        [JsonProperty]
         public string listName { get; set; }
+        [JsonProperty]
         public string name { get; set; }
+        [JsonProperty]
         public string description { get; set; }
+        [JsonProperty]
         public DateTime? dateCreated { get; set; }
+        [JsonProperty]
         public int priority { get; set; }
+        [JsonProperty]
         public DateOnly? deadline { get; set; }
+        [JsonProperty]
         public bool completed { get; set; }
     }
 }

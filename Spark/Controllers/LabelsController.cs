@@ -15,20 +15,21 @@ namespace Spark.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectsController : SparkControllerBase
+    public class LabelsController : SparkControllerBase
     {
-        public ProjectsController(IWebHostEnvironment hostingEnvironment, AppSettingsHelper appSettings, DatabaseContextHelper database) : base(hostingEnvironment, appSettings, database)
+        public LabelsController(IWebHostEnvironment hostingEnvironment, AppSettingsHelper appSettings, DatabaseContextHelper database) : base(hostingEnvironment, appSettings, database)
         {
             // Initalize values in SparkControllerBase
         }
 
-        // Gets all projects the user is participating in
+        // Gets all labels for a project
         [HttpGet]
-        public ResponseMessage GetProjects()
+        [Route("{projectId}")]
+        public ResponseMessage Get(int projectId)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = ProjectHelper.GetParticipatingProjects(getUser(),
+            var response = LabelHelper.GetLabels(getUser(), projectId,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());
@@ -36,14 +37,29 @@ namespace Spark.Controllers
             return response;
         }
 
-        // Creates a new project
+        // Creates a new label
         [HttpPost]
         [Route("create")]
         public ResponseMessage Create([FromBody] JObject data)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = ProjectHelper.Add(getUser(), data,
+            var response = LabelHelper.Add(getUser(), data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
+        // Delets a label
+        [HttpDelete]
+        [Route("{projectId}/{name}")]
+        public ResponseMessage Delete(int projectId, string name)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = LabelHelper.DeleteLabel(getUser(), projectId, name,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());

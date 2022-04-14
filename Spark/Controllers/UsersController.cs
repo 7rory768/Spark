@@ -22,7 +22,7 @@ namespace Spark.Controllers
             // Initalize values in SparkControllerBase
         }
 
-        // Gets collection.
+        // Gets all users (just for testing)
         [HttpGet]
         public ResponseMessage GetUsers()
         {
@@ -34,7 +34,7 @@ namespace Spark.Controllers
             return response;
         }
 
-        // Gets a specific user
+        // Logins in a specific user
         [HttpPost]
         [Route("login")]
         public ResponseMessage GetUsers([FromBody] JObject data)
@@ -47,7 +47,7 @@ namespace Spark.Controllers
             return response;
         }
 
-        // Adds a new instance.
+        // Creates a new user
         [HttpPost]
         [Route("create")]
         public ResponseMessage AddUser([FromBody] JObject data)

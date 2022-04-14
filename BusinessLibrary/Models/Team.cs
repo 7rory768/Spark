@@ -1,4 +1,6 @@
-﻿namespace BusinessLibrary.Models
+﻿using Newtonsoft.Json;
+
+namespace BusinessLibrary.Models
 {
     public class Team
     {
@@ -9,8 +11,11 @@
             this.mgrUsername = mgrUsername;
         }
 
+        [JsonProperty]
         public int id { get; set; }
+        [JsonProperty]
         public string name { get; set; }
+        [JsonProperty]
         public string mgrUsername { get; set; }
     }
 }

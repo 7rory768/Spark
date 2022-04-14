@@ -1,4 +1,6 @@
-﻿namespace BusinessLibrary.Models
+﻿using Newtonsoft.Json;
+
+namespace BusinessLibrary.Models
 {
     public class Project
     {
@@ -11,10 +13,15 @@
             this.dateCreated = dateCreated;
         }
 
+        [JsonProperty]
         public int id { get; set; }
+        [JsonProperty]
         public int teamId { get; set; }
+        [JsonProperty]
         public string name { get; set; }
+        [JsonProperty]
         public int budget { get; set; }
+        [JsonProperty]
         public DateTime dateCreated { get; set; }
     }
 }

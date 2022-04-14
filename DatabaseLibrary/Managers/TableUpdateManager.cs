@@ -111,6 +111,27 @@ SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS membe
 
 END;");
 
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createLabel`; CREATE PROCEDURE IF NOT EXISTS `createLabel`(IN _projectId INT, IN _name VARCHAR(255), IN _color CHAR(7))
+BEGIN
+
+	INSERT INTO `labels` (projectId, name, color) VALUES (_projectId, _name, _color);
+	
+END;");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getLabels`; CREATE PROCEDURE IF NOT EXISTS `getLabels`(IN _projectId INT)
+BEGIN
+	
+	SELECT * FROM labels WHERE projectId=_projectId;
+
+END;");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteLabel`; CREATE PROCEDURE IF NOT EXISTS `deleteLabel`(IN `_projectId` INT, IN `_name` VARCHAR(255))
+BEGIN
+	
+	DELETE FROM labels WHERE projectId = _projectId AND name=_name;
+
+END;");
+
             string message;
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out message);

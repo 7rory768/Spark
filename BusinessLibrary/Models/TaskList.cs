@@ -1,4 +1,6 @@
-﻿namespace BusinessLibrary.Models
+﻿using Newtonsoft.Json;
+
+namespace BusinessLibrary.Models
 {
     public class TaskList
     {
@@ -9,8 +11,11 @@
             this.dateCreated = dateCreated;
         }
 
+        [JsonProperty]
         public int projectId { get; set; }
+        [JsonProperty]
         public string name { get; set; }
+        [JsonProperty]
         public DateTime? dateCreated { get; set; }
     }
 }
