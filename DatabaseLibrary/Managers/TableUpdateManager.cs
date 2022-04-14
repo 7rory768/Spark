@@ -148,6 +148,21 @@ BEGIN
 
 END;");
 
+            procedures.Add(@"DELETE PROCEDURE IF EXISTS `moveList`; CREATE PROCEDURE IF NOT EXISTS `moveList`(IN `_projectId` int,IN `_name` varchar(255),IN `_newPosition` int)
+BEGIN
+	DECLARE _oldPosition INT;
+	
+	SELECT position INTO _oldPosition FROM `lists` WHERE projectId=_projectId AND `name`=_name;
+	
+	IF _newPosition > _oldPosition THEN
+		UPDATE `lists` SET position=position-1 WHERE position > _oldPosition AND position <= _newPosition;
+	ELSE
+		UPDATE `lists` SET position=position+1 WHERE position >= _newPosition AND position < _oldPosition;
+	END IF;
+
+	SELECT * FROM `lists` WHERE projectId=_projectId AND _name=name;
+
+END");
 
             string message;
             foreach (string query in procedures)

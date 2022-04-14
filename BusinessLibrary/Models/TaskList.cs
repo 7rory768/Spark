@@ -4,11 +4,12 @@ namespace BusinessLibrary.Models
 {
     public class TaskList
     {
-        public TaskList(int projectId, string name, DateTime? dateCreated)
+        public TaskList(int projectId, string name, DateTime? dateCreated, int position)
         {
             this.projectId = projectId;
             this.name = name;
             this.dateCreated = dateCreated;
+            this.position = position;
         }
 
         [JsonProperty]
