@@ -14,6 +14,8 @@ namespace Spark.ControllerHelpers
             string name = data["name"].Value<string>();
             int budget = data["budget"].Value<int>();
 
+            // TODO: SqlInjection protection
+
             // Add instance to database
             var dbInstance = DatabaseLibrary.Helpers.ProjectDBHelper.Add(teamId, name, budget, context, out StatusResponse statusResponse);
 
