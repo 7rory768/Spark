@@ -15,9 +15,9 @@ namespace Spark.ControllerHelpers
             // Return response
             var response = new ResponseMessage
                 (
-                    instance != null,
-                    statusResponse.Message,
-                    instance
+                    state: instance != null,
+                    message: statusResponse.Message,
+                    data: instance
                 );
             statusCode = statusResponse.StatusCode;
             return response;

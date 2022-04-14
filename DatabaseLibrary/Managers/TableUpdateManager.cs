@@ -24,7 +24,7 @@ IF
 	NOT EXISTS `team_members` ( `teamId` INT NOT NULL, `username` VARCHAR ( 255 ) NOT NULL, PRIMARY KEY ( teamId, username ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ) ON DELETE CASCADE, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, FOREIGN KEY ( teamId ) REFERENCES teams ( id ) ON DELETE CASCADE );
+	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `isDeleted` BOOLEAN DEFAULT FALSE, FOREIGN KEY ( teamId ) REFERENCES teams ( id ) ON DELETE CASCADE );
 CREATE TABLE
 IF
 	NOT EXISTS `lists` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ), `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP, `position` INT NOT NULL, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( `projectId` ) REFERENCES projects ( `id` ) ON DELETE CASCADE );
@@ -87,10 +87,10 @@ BEGIN
 			END;");
 
             procedures.Add(@"DROP PROCEDURE IF EXISTS `createUser`;
-			PROCEDURE `createUser`(IN `_username` varchar(255),IN `_fName` varchar(255),IN `_lName` varchar(255), IN `_password` VARCHAR(255),IN `_email` VARCHAR(255),IN `_userType` varchar(32))
+			CREATE PROCEDURE IF NOT EXISTS `createUser`(IN `_username` varchar(255),IN `_fName` varchar(255),IN `_lName` varchar(255), IN `_password` VARCHAR(255),IN `_email` VARCHAR(255))
 			BEGIN
 
-			INSERT INTO `users` (`username`, `fName`, `lName`, `password`, `email`, `userType`) VALUES (_username, _fName, _lName, `_password`, _email, _userType);
+			INSERT INTO `users` (`username`, `fName`, `lName`, `password`, `email`) VALUES (_username, _fName, _lName, `_password`, _email);
 
 			SELECT * FROM `users` WHERE username=_username;
 

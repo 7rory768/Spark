@@ -32,7 +32,7 @@ namespace DatabaseLibrary.Helpers
             {
                 if (isNotAlphaNumeric(username.Trim()))
                 {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid project name.");
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid user name.");
                 }
 
                 // Validate
