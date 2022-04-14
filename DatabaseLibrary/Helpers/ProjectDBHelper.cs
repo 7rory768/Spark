@@ -22,7 +22,7 @@ namespace DatabaseLibrary.Helpers
                             );
         }
 
-        public static Project? Add(int teamId, string name, int budget, DbContext context, out StatusResponse statusResponse)
+        public static Project? Add(string username, int teamId, string name, int budget, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
@@ -34,35 +34,55 @@ namespace DatabaseLibrary.Helpers
                 bool success = false;
 
                 // TODO: Make sure user is manager of the team first
-
-                // Add to database
-                DataTable table = context.ExecuteDataQueryProcedure
+                // Rachel Added
+                // Get manager data from database
+                DataTable tableManager = context.ExecuteDataQueryProcedure
                     (
-                        procedure: "createProject",
+                        procedure: "getTeamManager",
                         parameters: new Dictionary<string, object>()
                         {
                             { "_teamId", teamId },
-                            { "_name", name },
-                            { "_budget", budget},
+                            { "_user", username },
                         },
-                        message: out string message
+                        message: out string outMessage
                     );
-                if (table == null)
-                    throw new Exception(message);
-
-                DataRow row = table.Rows[0];
-
-                // Return value
-                if (string.IsNullOrEmpty(row["id"].ToString()))
+                if (tableManager == null) // if user is not manager of the team
                 {
-                    statusResponse = new StatusResponse("Failed to create project");
+                    statusResponse = new StatusResponse("User does not have permissions to create a project!");
                     return null;
                 }
-                else
-                {
-                    statusResponse = new StatusResponse("Created project successfully");
+                    
+                // If manager
+                else {
+                    // Add to database if Manager of team
+                    DataTable table = context.ExecuteDataQueryProcedure
+                        (
+                            procedure: "createProject",
+                            parameters: new Dictionary<string, object>()
+                            {
+                            { "_teamId", teamId },
+                            { "_name", name },
+                            { "_budget", budget},
+                            },
+                            message: out string message
+                        );
+                    if (table == null)
+                        throw new Exception(message);
 
-                    return fromRow(row);
+                    DataRow row = table.Rows[0];
+
+                    // Return value
+                    if (string.IsNullOrEmpty(row["id"].ToString()))
+                    {
+                        statusResponse = new StatusResponse("Failed to create project");
+                        return null;
+                    }
+                    else
+                    {
+                        statusResponse = new StatusResponse("Created project successfully");
+
+                        return fromRow(row);
+                    }
                 }
             }
             catch (Exception exception)

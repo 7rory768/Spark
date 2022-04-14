@@ -15,7 +15,7 @@ namespace Spark.ControllerHelpers
             int budget = data["budget"].Value<int>();
 
             // Add instance to database
-            var instance = DatabaseLibrary.Helpers.ProjectDBHelper.Add(teamId, name, budget, context, out StatusResponse statusResponse);
+            var instance = DatabaseLibrary.Helpers.ProjectDBHelper.Add(user.username, teamId, name, budget, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a new project.");
         }
 

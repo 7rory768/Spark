@@ -24,6 +24,7 @@ namespace Spark.Controllers
 
         // Gets all projects the user is participating in
         [HttpGet]
+        [Route("viewProjects")]
         public ResponseMessage GetProjects()
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
