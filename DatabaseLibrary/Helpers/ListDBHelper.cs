@@ -18,6 +18,7 @@ namespace DatabaseLibrary.Helpers
         private static TaskList fromRow(DataRow row)
         {
             return new TaskList(
+                            id: int.Parse(row["id"].ToString()),
                             projectId: int.Parse(row["projectId"].ToString()),
                             name: row["name"].ToString(),
                             dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime(),
@@ -63,15 +64,11 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
-        public static TaskList moveList(int projectId, string name, int newPosition, DbContext context, out StatusResponse statusResponse)
+        public static TaskList moveList(int projectId, int listId, int newPosition, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
-                if (isNotAlphaNumeric(name))
-                {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name");
-                }
-                else if (newPosition < 1)
+                if (newPosition < 1)
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive non-zero position");
                 }
@@ -83,7 +80,7 @@ namespace DatabaseLibrary.Helpers
                         parameters: new Dictionary<string, object>()
                         {
                             { "_projectId", projectId },
-                            { "_name", name },
+                            { "listId", listId},
                             { "_newPosition", newPosition},
                         },
                         message: out string message
@@ -135,23 +132,17 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
-        public static bool Delete(int projectId, string name, DbContext context, out StatusResponse statusResponse)
+        public static bool Delete(int listId, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
-                if (isNotAlphaNumeric(name))
-                {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name.");
-                }
-
-                // Add to database
+                // Remove from database
                 int rowsAffected = context.ExecuteNonQueryProcedure
                     (
                         procedure: "deleteList",
                         parameters: new Dictionary<string, object>()
                         {
-                            { "_projectId", projectId },
-                            { "_name", name },
+                            { "_id", listId},
                         },
                         message: out string message
                     );

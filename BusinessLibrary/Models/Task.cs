@@ -5,8 +5,9 @@ namespace BusinessLibrary.Models
 {
     public class Task
     {
-        public Task(int projectId, string listName, string name, string description, DateTime? dateCreated, int priority, DateOnly? deadline, bool completed, int completionPoints)
+        public Task(int id, int projectId, string listName, string name, string description, DateTime? dateCreated, int priority, DateOnly? deadline, bool completed, int completionPoints)
         {
+            this.id = id;
             this.projectId = projectId;
             this.listName = listName;
             this.name = name;
@@ -18,6 +19,8 @@ namespace BusinessLibrary.Models
             this.completionPoints = completionPoints;
         }
 
+        [JsonProperty]
+        public int id { get; set; }
         [JsonProperty]
         public int projectId { get; set; }
         [JsonProperty]
@@ -36,5 +39,7 @@ namespace BusinessLibrary.Models
         public bool completed { get; set; }
         [JsonProperty]
         public int completionPoints { get; set; }
+        [JsonProperty]
+        public List<User>? assignedUsers { get; set; }
     }
 }

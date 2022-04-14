@@ -21,11 +21,11 @@ namespace Spark.ControllerHelpers
         public static ResponseMessage MoveList(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             // Extract paramters
+            int listId = data["id"].Value<int>();
             int projectId = data["projectId"].Value<int>();
-            string name = data["name"].Value<string>();
             int newPosition = data["newPosition"].Value<int>();
 
-            var instance = DatabaseLibrary.Helpers.ListDBHelper.moveList(projectId, name, newPosition, context, out StatusResponse statusResponse);
+            var instance = DatabaseLibrary.Helpers.ListDBHelper.moveList(projectId, listId, newPosition, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while moving the list.");
         }
 
@@ -37,10 +37,10 @@ namespace Spark.ControllerHelpers
         }
 
 
-        public static ResponseMessage DeleteLabel(User user, int projectId, string name,
+        public static ResponseMessage DeleteList(User user, int listId,
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
-            bool success = DatabaseLibrary.Helpers.ListDBHelper.Delete(projectId, name, context, out StatusResponse statusResponse);
+            bool success = DatabaseLibrary.Helpers.ListDBHelper.Delete(listId, context, out StatusResponse statusResponse);
             return getResponse(success, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while deleting the label.");
         }
     }

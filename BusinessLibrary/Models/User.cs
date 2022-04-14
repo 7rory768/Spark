@@ -21,7 +21,7 @@ namespace BusinessLibrary.Models
         public string fName { get; set; }
         [JsonProperty]
         public string? lName { get; set; }
-        public string password { get; set; }
+        private string password { get; set; }
 
         [JsonProperty]
         public string? email { get; set; }

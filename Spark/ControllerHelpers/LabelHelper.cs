@@ -27,10 +27,10 @@ namespace Spark.ControllerHelpers
         }
 
 
-        public static ResponseMessage DeleteLabel(User user, int projectId, string name,
+        public static ResponseMessage DeleteLabel(User user, int labelId,
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
-            bool success = DatabaseLibrary.Helpers.LabelDBHelper.Delete(projectId, name, context, out StatusResponse statusResponse);
+            bool success = DatabaseLibrary.Helpers.LabelDBHelper.Delete(labelId, context, out StatusResponse statusResponse);
             return getResponse(success, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while deleting the label.");
         }
     }

@@ -54,12 +54,12 @@ namespace Spark.Controllers
 
         // Delets a label
         [HttpDelete]
-        [Route("{projectId}/{name}")]
-        public ResponseMessage Delete(int projectId, string name)
+        [Route("{id}")]
+        public ResponseMessage Delete(int id)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = LabelHelper.DeleteLabel(getUser(), projectId, name,
+            var response = LabelHelper.DeleteLabel(getUser(), id,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());
