@@ -26,11 +26,7 @@ namespace Spark.Controllers
         [HttpGet]
         public ResponseMessage GetProjects()
         {
-            if (!isAuthenticated())
-            {
-                HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                return null;
-            }
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
             var response = ProjectHelper.GetParticipatingProjects(getUser(),
                 context: Database.DbContext,
@@ -45,11 +41,8 @@ namespace Spark.Controllers
         [Route("create")]
         public ResponseMessage Create([FromBody] JObject data)
         {
-            if (!isAuthenticated())
-            {
-                HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                return null;
-            }
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
             var response = ProjectHelper.Add(getUser(), data,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,

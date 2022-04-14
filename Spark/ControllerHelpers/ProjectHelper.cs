@@ -13,10 +13,9 @@ namespace Spark.ControllerHelpers
             int teamId = data["teamId"].Value<int>();
             string name = data["name"].Value<string>();
             int budget = data["budget"].Value<int>();
-            string mgrUsername = data.ContainsKey("mgrUsername") ? data["mgrUsername"].Value<string>() : user.username;
 
             // Add instance to database
-            var dbInstance = DatabaseLibrary.Helpers.ProjectDBHelper.Add(teamId, name, budget, mgrUsername, context, out StatusResponse statusResponse);
+            var dbInstance = DatabaseLibrary.Helpers.ProjectDBHelper.Add(teamId, name, budget, context, out StatusResponse statusResponse);
 
             // Get rid of detailed internal server error message (when requested)
             if (statusResponse.StatusCode == HttpStatusCode.InternalServerError && !includeDetailedErrors)

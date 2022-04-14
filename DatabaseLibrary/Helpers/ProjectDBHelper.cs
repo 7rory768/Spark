@@ -18,12 +18,11 @@ namespace DatabaseLibrary.Helpers
                             teamId: int.Parse(row["teamId"].ToString()),
                             name: row["name"].ToString(),
                             budget: int.Parse(row["budget"].ToString()),
-                            dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime(),
-                            mgrUsername: row["mgrUsername"]?.ToString()
+                            dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime()
                             );
         }
 
-        public static Project? Add(int teamId, string name, int budget, string? mgrUsername, DbContext context, out StatusResponse statusResponse)
+        public static Project? Add(int teamId, string name, int budget, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
@@ -32,6 +31,8 @@ namespace DatabaseLibrary.Helpers
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a name.");
 
                 bool success = false;
+
+                // TODO: Make sure user is manager of the team first
 
                 // Add to database
                 DataTable table = context.ExecuteDataQueryProcedure
@@ -42,7 +43,6 @@ namespace DatabaseLibrary.Helpers
                             { "_teamId", teamId },
                             { "_name", name },
                             { "_budget", budget},
-                            { "_mgrUsername", mgrUsername},
                         },
                         message: out string message
                     );

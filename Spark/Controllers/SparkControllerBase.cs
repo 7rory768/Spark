@@ -2,6 +2,7 @@
 using DatabaseLibrary.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Spark.ContextHelpers;
+using System.Net;
 
 namespace Spark.Controllers
 {
@@ -25,6 +26,13 @@ namespace Spark.Controllers
         /// </summary>
         protected readonly DatabaseContextHelper Database;
 
+        protected readonly ResponseMessage notAuthorizedMessage = new ResponseMessage
+            (
+                false,
+                "You are not authorized to do this",
+                null
+            );
+
         /// <summary>
         /// Constructor called by the service provider.
         /// Using injection to get the arguments.
@@ -42,6 +50,12 @@ namespace Spark.Controllers
         protected bool isAuthenticated()
         {
             return Request.Headers.ContainsKey("Authorization");
+        }
+
+        protected ResponseMessage getNotAuthenticatedResponse()
+        {
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            return notAuthorizedMessage;
         }
         protected string getUsername()
         {

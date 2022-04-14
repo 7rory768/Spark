@@ -24,7 +24,7 @@ IF
 	NOT EXISTS `team_members` ( `teamId` INT NOT NULL, `username` VARCHAR ( 255 ) NOT NULL, PRIMARY KEY ( teamId, username ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( username ) REFERENCES users ( username ) );
 CREATE TABLE
 IF
-	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `mgrUsername` VARCHAR ( 255 ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ), FOREIGN KEY ( mgrUsername ) REFERENCES users ( username ) );
+	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, FOREIGN KEY ( teamId ) REFERENCES teams ( id ) );
 CREATE TABLE
 IF
 	NOT EXISTS `lists` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ), `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( `projectId` ) REFERENCES projects ( `id` ) );
@@ -77,14 +77,14 @@ IF
 			END;");
 
             procedures.Add(@"DROP PROCEDURE IF EXISTS `createProject`;
-			CREATE PROCEDURE `createProject`(IN `_teamId` integer,IN `_name` varchar(255),IN `_budget` integer,IN `_mgrUsername` varchar(255))
-			BEGIN
+			CREATE PROCEDURE `createProject`(IN `_teamId` integer,IN `_name` varchar(255),IN `_budget` integer)
+BEGIN
 
-			INSERT INTO `projects` (`teamId`, `name`, `budget`, `mgrUsername`) VALUES (_teamId, _name, _budget, _mgrUsername);
+			INSERT INTO `projects` (`teamId`, `name`, `budget`, `mgrUsername`) VALUES (_teamId, _name, _budget);
 
 			SELECT * FROM `projects` WHERE projects.id=@@IDENTITY;
 
-			END");
+			END;");
 
             procedures.Add(@"DROP PROCEDURE IF EXISTS `createUser`;
 			PROCEDURE `createUser`(IN `_username` varchar(255),IN `_fName` varchar(255),IN `_lName` varchar(255), IN `_password` VARCHAR(255),IN `_email` VARCHAR(255),IN `_userType` varchar(32))
