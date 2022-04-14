@@ -17,5 +17,9 @@ namespace BusinessLibrary.Models
         public int numPoints { get; set; }
         [JsonProperty]
         public DateTime dateGiven { get; set; }
+        [JsonProperty]
+        public int teamId { get; set; }
+        [JsonProperty]
+        public int projectId { get; set; }
     }
 }
