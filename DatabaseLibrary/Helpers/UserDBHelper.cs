@@ -138,17 +138,22 @@ namespace DatabaseLibrary.Helpers
         /// <summary>
         /// Adds a new instance into the database.
         /// </summary>
-        public static User Add(string username, string firstName, string? lastName, string password, string? email, DbContext context, out StatusResponse statusResponse)
+        public static User Add(string username, string firstName, string? lastName, string password, string email, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
                 // Validate
-                if (string.IsNullOrEmpty(username.Trim()))
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a username.");
                 if (string.IsNullOrEmpty(firstName.Trim()))
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a first name.");
+                if (string.IsNullOrEmpty(lastName.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a last name.");
+                if (string.IsNullOrEmpty(email.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide an email address.");
+                if (string.IsNullOrEmpty(username.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a username.");
                 if (string.IsNullOrEmpty(password.Trim()))
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a password.");
+
 
                 // Add to database
                 DataTable table = context.ExecuteDataQueryProcedure
@@ -159,8 +164,8 @@ namespace DatabaseLibrary.Helpers
                             { "_username", username },
                             { "_fName", firstName },
                             { "_lName", lastName },
-                            {"_password", password },
-                            {"_email", email },
+                            { "_password", password },
+                            { "_email", email },
                         },
                         message: out string message
                     );
@@ -168,9 +173,19 @@ namespace DatabaseLibrary.Helpers
                 if (table == null)
                     throw new Exception(message);
 
+                DataRow row = table.Rows[0];
+
                 // Return value
-                statusResponse = new StatusResponse("User added successfully");
-                return cache.Set(username, fromRow(table.Rows[0]));
+                if (string.IsNullOrEmpty(row["username"].ToString()))
+                {
+                    statusResponse = new StatusResponse("User already exists");
+                    return null;
+                }
+                else
+                {
+                    statusResponse = new StatusResponse("User created successfully");
+                    return cache.Set(username, fromRow(row));
+                }
             }
             catch (Exception exception)
             {
