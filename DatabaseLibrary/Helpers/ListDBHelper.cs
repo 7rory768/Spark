@@ -21,7 +21,7 @@ namespace DatabaseLibrary.Helpers
                             projectId: int.Parse(row["projectId"].ToString()),
                             name: row["name"].ToString(),
                             dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime(),
-                            position: int.Parse(row["color"].ToString())
+                            position: int.Parse(row["position"].ToString())
                             );
         }
 
@@ -147,7 +147,7 @@ namespace DatabaseLibrary.Helpers
                 // Add to database
                 int rowsAffected = context.ExecuteNonQueryProcedure
                     (
-                        procedure: "deleteLabel",
+                        procedure: "deleteList",
                         parameters: new Dictionary<string, object>()
                         {
                             { "_projectId", projectId },
