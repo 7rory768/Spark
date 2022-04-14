@@ -14,16 +14,16 @@ namespace DatabaseLibrary.Helpers
     {
         private static MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
 
-        private static User fromRow(DataRow row)
+        public static User fromRow(DataRow row)
         {
-            return new User(
+            return cache.Set(row["username"].ToString(), new User(
                             username: row["username"].ToString(),
                             fName: row["fName"].ToString(),
                             lName: row["lName"]?.ToString(),
                             password: row["password"].ToString(),
                             email: row["email"].ToString(),
                             dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime()
-                            );
+                            ));
         }
 
         public static User? GetUser(string username, DbContext context)
@@ -60,7 +60,7 @@ namespace DatabaseLibrary.Helpers
                     cache.Remove(username);
                     return null;
                 }
-                else return cache.Set(username, fromRow(table.Rows[0]));
+                else return fromRow(table.Rows[0]);
             }
             catch (Exception exception)
             {
@@ -78,24 +78,11 @@ namespace DatabaseLibrary.Helpers
                 if (string.IsNullOrEmpty(password.Trim()))
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a password.");
 
-                // Check Cache first
-                User user = cache.Get<User>(username);
-
-                if (user != null)
-                {
-                    if (user.password != password)
-                    {
-                        statusResponse = new StatusResponse("Incorrect password");
-                        return null;
-                    }
-
-                    statusResponse = new StatusResponse("User logged in successfully");
-                    return user;
-                }
+                // Dont check cache since passwords are protected
 
                 bool success = false;
 
-                // Add to database
+                // Login in database
                 DataTable table = context.ExecuteDataQueryProcedure
                     (
                         procedure: "loginUser",
@@ -125,7 +112,7 @@ namespace DatabaseLibrary.Helpers
                 else
                 {
                     statusResponse = new StatusResponse("User logged in successfully");
-                    return cache.Set(username, fromRow(row));
+                    return fromRow(row);
                 }
             }
             catch (Exception exception)
@@ -184,7 +171,7 @@ namespace DatabaseLibrary.Helpers
                 else
                 {
                     statusResponse = new StatusResponse("User created successfully");
-                    return cache.Set(username, fromRow(row));
+                    return fromRow(row);
                 }
             }
             catch (Exception exception)
@@ -218,7 +205,7 @@ namespace DatabaseLibrary.Helpers
                 // Parse data
                 List<User> instances = new List<User>();
                 foreach (DataRow row in table.Rows)
-                    instances.Add(fromRow(row));
+                    fromRow(row);
 
                 // Return value
                 statusResponse = new StatusResponse("Users list has been retrieved successfully.");

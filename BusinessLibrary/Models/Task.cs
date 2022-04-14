@@ -19,7 +19,7 @@ namespace BusinessLibrary.Models
         }
 
         [JsonProperty]
-        int id { get; set; }
+        public int id { get; set; }
         [JsonProperty]
         public int projectId { get; set; }
         [JsonProperty]
@@ -38,5 +38,7 @@ namespace BusinessLibrary.Models
         public bool completed { get; set; }
         [JsonProperty]
         public int completionPoints { get; set; }
+        [JsonProperty]
+        public List<User>? assignedUsers { get; set; }
     }
 }

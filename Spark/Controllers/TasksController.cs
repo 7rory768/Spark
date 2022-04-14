@@ -47,6 +47,36 @@ namespace Spark.Controllers
             return response;
         }
 
+        // Assigns a user to a task
+        [HttpPost]
+        [Route("assign")]
+        public ResponseMessage AssignToTask([FromBody] JObject data)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = TaskHelper.AssignToTask(data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
+        // Unassigns a user from a task
+        [HttpPost]
+        [Route("unassign")]
+        public ResponseMessage UnassignFromTask([FromBody] JObject data)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = TaskHelper.UnassignFromTask(data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
         // Moves a task
         [HttpPost]
         [Route("move")]

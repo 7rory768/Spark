@@ -8,9 +8,9 @@ namespace DatabaseLibrary.Helpers
 {
     public class TaskDBHelper : DBHelper
     {
-        private static Task fromRow(DataRow row)
+        private static Task fromRow(DataRow row, DbContext context)
         {
-            return new Task(
+            Task task = new Task(
                             id: int.Parse(row["id"].ToString()),
                             projectId: int.Parse(row["projectId"].ToString()),
                             listName: row["listName"].ToString(),
@@ -22,6 +22,36 @@ namespace DatabaseLibrary.Helpers
                             completed: bool.Parse(row["completed"].ToString()),
                             completionPoints: int.Parse(row["completionPoints"].ToString())
                             );
+
+            task.assignedUsers = getAssignedToTask(task, context);
+            return task;
+        }
+        private static List<User> getAssignedToTask(Task task, DbContext context)
+        {
+            return getAssignedToTask(task.id, context);
+        }
+
+        private static List<User> getAssignedToTask(int taskId, DbContext context)
+        {
+            List<User> assignedToTask = new List<User>();
+
+            // Get from database
+            DataTable table = context.ExecuteDataQueryProcedure
+                (
+                    procedure: "getAssignedToTask",
+                    parameters: new Dictionary<string, object>()
+                    {
+                            { "_id", taskId },
+                    },
+                    message: out string message
+                );
+            if (table == null)
+                throw new Exception(message);
+
+            foreach (DataRow row in table.Rows)
+                assignedToTask.Add(UserDBHelper.fromRow(row));
+
+            return assignedToTask;
         }
 
         public static Task? Add(int projectId, int listId, string name, string description, int priority, DateOnly? deadline, int completionPoints, DbContext context, out StatusResponse statusResponse)
@@ -64,7 +94,7 @@ namespace DatabaseLibrary.Helpers
                     throw new Exception(message);
 
                 statusResponse = new StatusResponse("Created list successfully");
-                return fromRow(table.Rows[0]);
+                return fromRow(table.Rows[0], context);
             }
             catch (Exception exception)
             {
@@ -108,7 +138,74 @@ namespace DatabaseLibrary.Helpers
                     throw new Exception(message);
 
                 statusResponse = new StatusResponse("Updated task successfully");
-                return fromRow(table.Rows[0]);
+                return fromRow(table.Rows[0], context);
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return null;
+            }
+        }
+
+        public static Task? assignToTask(int taskId, string username, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                if (isNotAlphaNumeric(username))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
+                }
+
+                // Add to database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "assignToTask",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_taskId", taskId },
+                            { "_username", username},
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                statusResponse = new StatusResponse(string.Format("Assigned {0} to task {1} successfully", username, taskId));
+                return fromRow(table.Rows[0], context);
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return null;
+            }
+        }
+
+        public static Task? unassignFromTask(int taskId, string username, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                if (isNotAlphaNumeric(username))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
+                }
+
+                // Add to database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "unassignFromTask",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_taskId", taskId },
+                            { "_username", username},
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                statusResponse = new StatusResponse(string.Format("Unassigned {0} from task {1} successfully", username, taskId));
+
+                return fromRow(table.Rows[0], context);
             }
             catch (Exception exception)
             {
@@ -142,7 +239,7 @@ namespace DatabaseLibrary.Helpers
                     throw new Exception(message);
 
                 statusResponse = new StatusResponse("Moved task successfully");
-                return fromRow(table.Rows[0]);
+                return fromRow(table.Rows[0], context);
             }
             catch (Exception exception)
             {
@@ -174,7 +271,7 @@ namespace DatabaseLibrary.Helpers
                 statusResponse = new StatusResponse("Got tasks successfully");
 
                 foreach (DataRow row in table.Rows)
-                    objects.Add(fromRow(row));
+                    objects.Add(fromRow(row, context));
 
                 return objects;
             }

@@ -44,6 +44,33 @@ namespace Spark.ControllerHelpers
             var instance = DatabaseLibrary.Helpers.TaskDBHelper.Update(id, name, description, deadline?.Value<DateOnly>("deadline"), completionPoints, completed, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a task.");
         }
+
+        public static ResponseMessage AssignToTask(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            if (!ContainsRequiredKeys(data, "id", "username"))
+                return GetMissingKeysResponse(data, out statusCode, includeDetailedErrors, "id", "username");
+
+            // Extract paramters
+            int id = data["id"].Value<int>();
+            string username = data["username"].Value<string>();
+
+            var instance = DatabaseLibrary.Helpers.TaskDBHelper.assignToTask(id, username, context, out StatusResponse statusResponse);
+            return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while assigning the user to the task.");
+        }
+
+        public static ResponseMessage UnassignFromTask(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            if (!ContainsRequiredKeys(data, "id", "username"))
+                return GetMissingKeysResponse(data, out statusCode, includeDetailedErrors, "id", "username");
+
+            // Extract paramters
+            int id = data["id"].Value<int>();
+            string username = data["username"].Value<string>();
+
+            var instance = DatabaseLibrary.Helpers.TaskDBHelper.unassignFromTask(id, username, context, out StatusResponse statusResponse);
+            return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while unassigning the user from the task.");
+        }
+
         public static ResponseMessage MoveTask(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             if (!ContainsRequiredKeys(data, "id", "listId", "newPriority"))

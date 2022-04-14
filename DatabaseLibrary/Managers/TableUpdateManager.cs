@@ -225,6 +225,31 @@ BEGIN
 
 END;");
 
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getAssignedToTask`; CREATE PROCEDURE IF NOT EXISTS PROCEDURE `getAssignedToTask`(IN _id INT)
+BEGIN
+
+SELECT * FROM USERS WHERE username IN (SELECT username FROM assigned_to WHERE taskId=_id);
+
+END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `assignToTask`; CREATE PROCEDURE IF NOT EXISTS `assignToTask`(IN _taskId INT, IN _username varchar(255))
+BEGIN
+	
+	INSERT INTO assigned_to (taskId, username) VALUES (_taskId, _username);
+	
+	SELECT * from tasks WHERE id=_taskId;
+
+END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `unassignFromTask`; CREATE PROCEDURE IF NOT EXISTS `unassignFromTask`(IN _taskId INT, IN _username varchar(255))
+BEGIN
+	
+	DELETE FROM assigned_to WHERE taskId=_taskId AND username=_username;
+	
+	SELECT * from tasks WHERE id=_taskId;
+
+END;");
+
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }

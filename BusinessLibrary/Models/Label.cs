@@ -18,7 +18,7 @@ namespace BusinessLibrary.Models
         }
 
         [JsonProperty]
-        int id { get; set; }
+        public int id { get; set; }
         [JsonProperty]
         int projectId { get; set; }
         [JsonProperty]
