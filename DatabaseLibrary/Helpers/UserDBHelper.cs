@@ -22,8 +22,7 @@ namespace DatabaseLibrary.Helpers
                             lName: row["lName"]?.ToString(),
                             password: row["password"].ToString(),
                             email: row["email"].ToString(),
-                            dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime(),
-                            userType: row["userType"].ToString()
+                            dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime()
                             );
         }
 
@@ -139,7 +138,7 @@ namespace DatabaseLibrary.Helpers
         /// <summary>
         /// Adds a new instance into the database.
         /// </summary>
-        public static User Add(string username, string firstName, string? lastName, string password, string? email, string userType, DbContext context, out StatusResponse statusResponse)
+        public static User Add(string username, string firstName, string? lastName, string password, string? email, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
@@ -150,14 +149,6 @@ namespace DatabaseLibrary.Helpers
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a first name.");
                 if (string.IsNullOrEmpty(password.Trim()))
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a password.");
-                if (!UserType.isValid(userType))
-                    throw new StatusException(HttpStatusCode.BadRequest, userType + " is not a valid user type.");
-
-                // Generate a new instance
-                User instance = new User
-                    (
-                        username, firstName, lastName, password, email, DateTime.Now, userType
-                    );
 
                 // Add to database
                 DataTable table = context.ExecuteDataQueryProcedure
@@ -165,12 +156,11 @@ namespace DatabaseLibrary.Helpers
                         procedure: "createUser",
                         parameters: new Dictionary<string, object>()
                         {
-                            { "_username", instance.username },
-                            { "_fName", instance.fName },
-                            { "_lName", instance.lName },
-                            {"_password", instance.password },
-                            {"_email", instance.email },
-                            {"_userType", instance.userType }
+                            { "_username", username },
+                            { "_fName", firstName },
+                            { "_lName", lastName },
+                            {"_password", password },
+                            {"_email", email },
                         },
                         message: out string message
                     );

@@ -16,6 +16,9 @@ namespace BusinessLibrary.Models
         [JsonProperty]
         public string name { get; set; }
         [JsonProperty]
+        public int position { get; set; }
+
+        [JsonProperty]
         public DateTime? dateCreated { get; set; }
     }
 }

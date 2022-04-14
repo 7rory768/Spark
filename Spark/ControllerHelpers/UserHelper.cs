@@ -24,10 +24,9 @@ namespace Spark.ControllerHelpers
             string lastName = (data.ContainsKey("lastName")) ? data.GetValue("lastName").Value<string>() : null;
             string password = data["password"].Value<string>();
             string email = data.GetValue("email").Value<string>();
-            string userType = data.GetValue("userType").Value<string>();
 
             // Add instance to database
-            var instance = DatabaseLibrary.Helpers.UserDBHelper.Add(username, firstName, lastName, password, email, userType,
+            var instance = DatabaseLibrary.Helpers.UserDBHelper.Add(username, firstName, lastName, password, email,
                 context, out StatusResponse statusResponse);
 
             // Get rid of detailed internal server error message (when requested)
