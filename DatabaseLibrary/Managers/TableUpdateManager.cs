@@ -24,31 +24,31 @@ IF
 	NOT EXISTS `team_members` ( `teamId` INT NOT NULL, `username` VARCHAR ( 255 ) NOT NULL, PRIMARY KEY ( teamId, username ), FOREIGN KEY ( teamId ) REFERENCES teams ( id ) ON DELETE CASCADE, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `isDeleted` BOOLEAN DEFAULT FALSE, FOREIGN KEY ( teamId ) REFERENCES teams ( id ) ON DELETE CASCADE );
+	NOT EXISTS `projects` ( `id` INT AUTO_INCREMENT PRIMARY KEY, `teamId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `budget` INT DEFAULT 0 NOT NULL, `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `description` TEXT DEFAULT "", FOREIGN KEY ( teamId ) REFERENCES teams ( id ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `lists` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ), `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP, `position` INT NOT NULL, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( `projectId` ) REFERENCES projects ( `id` ) ON DELETE CASCADE );
+	NOT EXISTS `lists` (`id` INT AUTO_INCREMENT PRIMARY KEY, `projectId` INT NOT NULL, `name` VARCHAR ( 255 ), `dateCreated` TIMESTAMP DEFAULT UTC_TIMESTAMP, `position` INT NOT NULL, FOREIGN KEY ( `projectId` ) REFERENCES projects ( `id` ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `tasks` ( `projectId` INT NOT NULL, `listName` VARCHAR ( 255 ) NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, description TEXT DEFAULT "", dateCreated TIMESTAMP DEFAULT UTC_TIMESTAMP, priority INT NOT NULL, deadline DATE DEFAULT NULL, completed BOOLEAN DEFAULT FALSE, completionPoints INT DEFAULT 1, PRIMARY KEY ( projectId, listName, `name` ), FOREIGN KEY ( projectId, listName ) REFERENCES lists ( `projectId`, `name` ) ON DELETE CASCADE );
+	NOT EXISTS `tasks` (`id` INT AUTO_INCREMENT PRIMARY KEY, `projectId` INT NOT NULL, `listId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, description TEXT DEFAULT "", dateCreated TIMESTAMP DEFAULT UTC_TIMESTAMP, priority INT NOT NULL, deadline DATE DEFAULT NULL, completed BOOLEAN DEFAULT FALSE, completionPoints INT DEFAULT 1, FOREIGN KEY ( projectId, listId ) REFERENCES lists ( `projectId`, `id` ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `labels` ( `projectId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `color` CHAR ( 7 ) NOT NULL, PRIMARY KEY ( projectId, `name` ), FOREIGN KEY ( projectId ) REFERENCES projects ( id ) ON DELETE CASCADE );
+	NOT EXISTS `labels` (`id` INT AUTO_INCREMENT PRIMARY KEY , `projectId` INT NOT NULL, `name` VARCHAR ( 255 ) NOT NULL, `color` CHAR ( 7 ) NOT NULL, FOREIGN KEY ( projectId ) REFERENCES projects ( id ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `categorizes` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `labelName` VARCHAR ( 255 ), PRIMARY KEY ( projectId, listName, taskName, labelName ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ) ON DELETE CASCADE, FOREIGN KEY ( projectId, labelName ) REFERENCES labels ( projectId, `name` ) ON DELETE CASCADE );
+	NOT EXISTS `categorizes` (`taskId` INT NOT NULL, `labelId` INT NOT NULL, PRIMARY KEY (taskId, labelId), FOREIGN KEY ( `taskId` ) REFERENCES tasks ( `id` ) ON DELETE CASCADE, FOREIGN KEY ( `labelId` ) REFERENCES labels ( `id` ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `checklists` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `id` INT NOT NULL, `title` VARCHAR ( 255 ) NOT NULL, PRIMARY KEY ( projectId, listName, taskName, id ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ) ON DELETE CASCADE );
+	NOT EXISTS `checklists` (`id` INT AUTO_INCREMENT PRIMARY KEY, `taskId` INT NOT NULL, `title` VARCHAR ( 255 ) NOT NULL, FOREIGN KEY ( taskId ) REFERENCES tasks ( `id` ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `checklist_items` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `checklistId` INT NOT NULL, `description` TEXT NOT NULL, `completed` BOOLEAN DEFAULT FALSE NOT NULL, PRIMARY KEY ( projectId, listName, taskName, checklistId, description ( 255 )), FOREIGN KEY ( projectId, listName, taskName, checklistId ) REFERENCES checklists ( projectId, listName, taskName, `id` ) ON DELETE CASCADE );
+	NOT EXISTS `checklist_items` (`id` INT AUTO_INCREMENT PRIMARY KEY, `checklistId` INT NOT NULL, `description` TEXT NOT NULL, `completed` BOOLEAN DEFAULT FALSE NOT NULL, FOREIGN KEY ( checklistId ) REFERENCES checklists ( `id` ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `assigned_to` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), PRIMARY KEY ( projectId, listName, taskName, username ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ) ON DELETE CASCADE, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE );
+	NOT EXISTS `assigned_to` (`taskId` INT NOT NULL, `username` VARCHAR ( 255 ), PRIMARY KEY ( taskId, username ), FOREIGN KEY ( taskId ) REFERENCES tasks ( `id` ) ON DELETE CASCADE, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE );
 CREATE TABLE
 IF
-	NOT EXISTS `comments` ( `projectId` INT, `listName` VARCHAR ( 255 ), `taskName` VARCHAR ( 255 ), `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( projectId, listName, taskName ) REFERENCES tasks ( projectId, listName, `name` ) ON DELETE CASCADE, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE, INDEX ( projectId, listName, taskName ) );
+	NOT EXISTS `comments` ( `taskId` INT NOT NULL, `username` VARCHAR ( 255 ), `date` TIMESTAMP DEFAULT UTC_TIMESTAMP NOT NULL, `comment` VARCHAR ( 255 ), FOREIGN KEY ( taskId ) REFERENCES tasks ( id ) ON DELETE CASCADE, FOREIGN KEY ( username ) REFERENCES users ( username ) ON DELETE CASCADE );
 ");
 
             string message;
