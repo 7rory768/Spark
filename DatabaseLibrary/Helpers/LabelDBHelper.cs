@@ -18,6 +18,7 @@ namespace DatabaseLibrary.Helpers
         private static Label fromRow(DataRow row)
         {
             return new Label(
+                            id: int.Parse(row["id"].ToString()),
                             projectId: int.Parse(row["projectId"].ToString()),
                             name: row["name"].ToString(),
                             color: row["color"].ToString()
@@ -38,7 +39,7 @@ namespace DatabaseLibrary.Helpers
                 }
 
                 // Add to database
-                int rowsAffected = context.ExecuteNonQueryProcedure
+                DataTable table = context.ExecuteDataQueryProcedure
                     (
                         procedure: "createLabel",
                         parameters: new Dictionary<string, object>()
@@ -49,11 +50,11 @@ namespace DatabaseLibrary.Helpers
                         },
                         message: out string message
                     );
-                if (rowsAffected < 1)
+                if (table == null)
                     throw new Exception(message);
 
                 statusResponse = new StatusResponse("Created label successfully");
-                return new Label(projectId, name, color);
+                return fromRow(table.Rows[0]);
             }
             catch (Exception exception)
             {
@@ -99,23 +100,17 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
-        public static bool Delete(int projectId, string name, DbContext context, out StatusResponse statusResponse)
+        public static bool Delete(int id, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
-                if (isNotAlphaNumeric(name))
-                {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name.");
-                }
-
-                // Add to database
+                // Remove from database
                 int rowsAffected = context.ExecuteNonQueryProcedure
                     (
                         procedure: "deleteLabel",
                         parameters: new Dictionary<string, object>()
                         {
-                            { "_projectId", projectId },
-                            { "_name", name },
+                            { "_id", id },
                         },
                         message: out string message
                     );

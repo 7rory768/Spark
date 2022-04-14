@@ -17,14 +17,14 @@ namespace Spark.Controllers
             // Initalize values in SparkControllerBase
         }
 
-        // Gets all tasks for a project list
+        // Gets all tasks for a task list
         [HttpGet]
-        [Route("{projectId}/{listName}")]
-        public ResponseMessage Get(int projectId, string listName)
+        [Route("{listId}")]
+        public ResponseMessage Get(int listId)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = TaskHelper.GetTasks(getUser(), projectId, listName,
+            var response = TaskHelper.GetTasks(getUser(), listId,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());
@@ -79,12 +79,12 @@ namespace Spark.Controllers
 
         // Deletes a task
         [HttpDelete]
-        [Route("{projectId}/{listName}/{name}")]
-        public ResponseMessage Delete(int projectId, string listName, string name)
+        [Route("{id}")]
+        public ResponseMessage Delete(int id)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = TaskHelper.DeleteTask(getUser(), projectId, listName, name,
+            var response = TaskHelper.DeleteTask(getUser(), id,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());

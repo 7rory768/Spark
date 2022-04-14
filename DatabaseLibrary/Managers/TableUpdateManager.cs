@@ -116,6 +116,8 @@ BEGIN
 
 	INSERT INTO `labels` (projectId, name, color) VALUES (_projectId, _name, _color);
 	
+	SELECT * FROM labels WHERE id=@@IDENTITY;
+	
 END;");
 
             procedures.Add(@"DROP PROCEDURE IF EXISTS `getLabels`; CREATE PROCEDURE IF NOT EXISTS `getLabels`(IN _projectId INT)
@@ -125,10 +127,10 @@ BEGIN
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteLabel`; CREATE PROCEDURE IF NOT EXISTS `deleteLabel`(IN `_projectId` INT, IN `_name` VARCHAR(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteLabel`; CREATE PROCEDURE IF NOT EXISTS `deleteLabel`(IN `_id` INT)
 BEGIN
 	
-	DELETE FROM labels WHERE projectId = _projectId AND name=_name;
+	DELETE FROM labels WHERE id=_id;
 
 END;");
 
@@ -137,7 +139,7 @@ BEGIN
 	
 	INSERT INTO `lists` (projectId, name, position) VALUES (_projectId, _name, _position);
 	
-	SELECT * FROM `lists` WHERE projectId=_projectId AND name=_name;
+	SELECT * FROM `lists` WHERE id=@@IDENTITY;
 
 END;");
 
@@ -148,11 +150,11 @@ BEGIN
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `moveList`; CREATE PROCEDURE IF NOT EXISTS `moveList`(IN `_projectId` int,IN `_name` varchar(255),IN `_newPosition` int)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `moveList`; CREATE PROCEDURE IF NOT EXISTS `moveList`(IN _projectId INT, IN `_listId` INT,IN `_newPosition` int)
 BEGIN
 	DECLARE _oldPosition INT;
 	
-	SELECT position INTO _oldPosition FROM `lists` WHERE projectId=_projectId AND `name`=_name;
+	SELECT position INTO _oldPosition FROM `lists` WHERE id=_id;
 	
 	IF _newPosition > _oldPosition THEN
 		UPDATE `lists` SET position=position-1 WHERE projectId=_projectId AND position > _oldPosition AND position <= _newPosition;
@@ -160,59 +162,66 @@ BEGIN
 		UPDATE `lists` SET position=position+1 WHERE projectId=_projectId AND position >= _newPosition AND position < _oldPosition;
 	END IF;
 	
-	UPDATE `lists` SET position=_newPosition WHERE projectId=_projectId AND `name`=_name;
+	UPDATE `lists` SET position=_newPosition WHERE id=_listId;
 
-	SELECT * FROM `lists` WHERE projectId=_projectId AND _name=name;
+	SELECT * FROM `lists` WHERE id=_listId;
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `createTask`; CREATE PROCEDURE IF NOT EXISTS `createTask`(IN _projectId INT, IN _listName VARCHAR(255), IN _name VARCHAR(255), IN _description TEXT, IN _priority INT, IN _completionPoints INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteList`;CREATE PROCEDURE IF NOT EXISTS `deleteList`(IN `_id` INT)
 BEGIN
 
-	INSERT INTO `tasks` (projectId, listName, `name`, description, priority, completionPoints) VALUES (_projectId, _listName, _description, _priority, _completionPoints);
+	DELETE FROM `lists` WHERE id=_id;
+
+END");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createTask`; CREATE PROCEDURE IF NOT EXISTS `createTask`(IN _projectId INT, IN _listId INT, IN _name VARCHAR(255), IN _description TEXT, IN _priority INT, IN _completionPoints INT)
+BEGIN
+
+	INSERT INTO `tasks` (projectId, listId, `name`, description, priority, completionPoints) VALUES (_projectId, _listId, _description, _priority, _completionPoints);
 	
-	SELECT * FROM tasks WHERE projectId=_projectId AND listName=_listName AND `name`=_name;
+	SELECT * FROM tasks WHERE id=@@IDENTITY;
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTask`; CREATE PROCEDURE IF NOT EXISTS `deleteTask`(IN _projectId INT, IN _listName VARCHAR(255), IN _name VARCHAR(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTask`; CREATE PROCEDURE IF NOT EXISTS `deleteTask`(IN _id INT)
 BEGIN
 	
-	DELETE FROM tasks WHERE projectId=_projectId AND listName=_listName AND `name`=_name;
+	DELETE FROM tasks WHERE id=_id;
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `getTasks`; CREATE PROCEDURE IF NOT EXISTS `getTasks`(IN _projectId INT, IN _listName VARCHAR(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getTasks`; CREATE PROCEDURE IF NOT EXISTS `getTasks`(IN _listId INT)
 BEGIN
 	
-	SELECT * FROM tasks WHERE projectId=_projectId AND listName=_listName ORDER BY position ASC;
+	SELECT * FROM tasks WHERE listId=_listId ORDER BY position ASC;
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `moveTask`; CREATE PROCEDURE IF NOT EXISTS `moveTask`(IN _projectId INT, IN _listName VARCHAR(255), IN _name VARCHAR(255), IN _newPriority INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `moveTask`; CREATE PROCEDURE IF NOT EXISTS `moveTask`(IN _listId INT, IN _taskId INT, IN _newPriority INT)
 BEGIN
 	DECLARE _oldPriority INT;
 	
-	SELECT priority INTO _oldPriority FROM `tasks` WHERE projectId=_projectId AND listName=_listName AND `name`=_name;
+	SELECT priority INTO _oldPriority FROM `tasks` WHERE id=_taskId;
 	
 	IF _newPriority > _oldPriority THEN
-		UPDATE `tasks` SET priority=priority-1 WHERE projectId=_projectId AND listName=_listName AND priority > _oldPriority AND priority <= _newPriority;
+		UPDATE `tasks` SET priority=priority-1 WHERE listId=_listId AND priority > _oldPriority AND priority <= _newPriority;
 	ELSE
-		UPDATE `tasks` SET priority=priority+1 WHERE projectId=_projectId AND listName=_listName AND priority >= _newPriority AND priority < _oldPriority;
+		UPDATE `tasks` SET priority=priority+1 WHERE listId=_listId AND listName=_listName AND priority >= _newPriority AND priority < _oldPriority;
 	END IF;
 	
-	UPDATE `tasks` SET priority=_newPriority WHERE projectId=_projectId AND listName=_listName AND `name`=_name;
+	UPDATE `tasks` SET priority=_newPriority WHERE id=_taskId;
 
-	SELECT * FROM `tasks` WHERE projectId=_projectId AND listName=_listName AND _name=name;
+	SELECT * FROM `tasks` WHERE id=_taskId;
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `updateTask`(IN _projectId INT, IN _listName VARCHAR(255), IN _name VARCHAR(255), IN _description TEXT, IN _deadline DATE, IN _completionPoints INT, IN _completed BOOLEAN)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `updateTask`; CREATE PROCEDURE IF NOT EXISTS `updateTask`(IN _id INT, IN _name VARCHAR(255), IN _description TEXT, IN _deadline DATE, IN _completionPoints INT, IN _completed BOOLEAN)
 BEGIN
 	
-	UPDATE `tasks` SET description=_description, deadline=_deadline, completionPoints=_completionPoints, completed=_completed WHERE projectId=_projectId AND listName=_listName AND _name=name;
+	UPDATE `tasks` SET name=_name, description=_description, deadline=_deadline, completionPoints=_completionPoints, completed=_completed WHERE id=_id;
 	
-	SELECT * FROM `tasks` WHERE projectId=_projectId AND listName=_listName AND _name=name;
+	SELECT * FROM `tasks` WHERE id=_id;
 
 END;");
 

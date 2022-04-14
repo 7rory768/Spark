@@ -9,13 +9,16 @@ namespace BusinessLibrary.Models
 {
     public class Label
     {
-        public Label(int projectId, string name, string color)
+        public Label(int id, int projectId, string name, string color)
         {
+            this.id = id;
             this.projectId = projectId;
             this.name = name;
             this.color = color;
         }
 
+        [JsonProperty]
+        int id { get; set; }
         [JsonProperty]
         int projectId { get; set; }
         [JsonProperty]
