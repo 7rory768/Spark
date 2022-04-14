@@ -181,6 +181,62 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
+        // Updates a user's info
+        public static User Update(string username, string firstName, string? lastName, string password, string email, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                // Validate
+                if (string.IsNullOrEmpty(firstName.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a first name.");
+                if (string.IsNullOrEmpty(lastName.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a last name.");
+                if (string.IsNullOrEmpty(email.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide an email address.");
+                if (string.IsNullOrEmpty(username.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a username.");
+                if (string.IsNullOrEmpty(password.Trim()))
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a password.");
+
+
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "updateUser",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_username", username },
+                            { "_fName", firstName },
+                            { "_lName", lastName },
+                            { "_password", password },
+                            { "_email", email },
+                        },
+                        message: out string message
+                    );
+
+                if (table == null)
+                    throw new Exception(message);
+
+                DataRow row = table.Rows[0];
+
+                // Return value
+                //if (string.IsNullOrEmpty(row["username"].ToString()))
+                //{
+                //    statusResponse = new StatusResponse("User information unsuccessfully changed");
+                //   return null;
+                //}
+                //else
+                //{
+                    statusResponse = new StatusResponse("User information successfully changed");
+                    return fromRow(row);
+                //}
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return null;
+            }
+        }
+
         /// <summary>
         /// Retrieves a list of instances.
         /// </summary>

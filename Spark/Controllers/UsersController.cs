@@ -60,5 +60,18 @@ namespace Spark.Controllers
             return response;
         }
 
+        // Modifies a user's information
+        [HttpPost]
+        [Route("update")]
+        public ResponseMessage UpdateUser([FromBody] JObject data)
+        {
+            var response = UserHelper.Update(getUser(), data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
     }
 }

@@ -250,6 +250,15 @@ BEGIN
 
 END;");
 
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `updateUser`; 
+			CREATE PROCEDURE IF NOT EXISTS `updateUser`(IN _username varchar(255),IN _fName varchar(255),IN _lName varchar(255),IN _password VARCHAR(255),IN _email VARCHAR(255))
+			BEGIN
+			UPDATE `users` SET fName = _fName, lName = _lName, `password` = _password, email = _email WHERE username = _username;
+			
+			SELECT * FROM `users` WHERE username = _username;
+
+			END;");
+
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }
