@@ -67,5 +67,20 @@ namespace Spark.Controllers
             return response;
         }
 
+        // Gets all projects led by a team
+        [HttpGet]
+        [Route("team/{id}")]
+        public ResponseMessage GetTeamProjects(int id)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = ProjectHelper.GetTeamProjects(id,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
     }
 }
