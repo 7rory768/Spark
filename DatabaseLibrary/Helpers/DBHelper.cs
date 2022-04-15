@@ -11,16 +11,26 @@ namespace DatabaseLibrary.Helpers
     {
         protected static bool isNotAlpha(params string[] args)
         {
+            return isNotAlpha(true, args);
+        }
+
+        protected static bool isNotAlpha(bool allowSpaces, params string[] args)
+        {
             foreach (string arg in args)
-                if (string.IsNullOrEmpty(arg) || Regex.IsMatch(arg, "([^A-Za-z&/])+"))
+                if (string.IsNullOrEmpty(arg) || Regex.IsMatch(arg, "([^A-Za-z&/" + (allowSpaces ? "\\s" : "") + "])+"))
                     return true;
 
             return false;
         }
         protected static bool isNotAlphaNumeric(params string[] args)
         {
+            return isNotAlphaNumeric(true, args);
+        }
+
+        protected static bool isNotAlphaNumeric(bool allowSpaces, params string[] args)
+        {
             foreach (string arg in args)
-                if (string.IsNullOrEmpty(arg) || Regex.IsMatch(arg, "[^\\w]+"))
+                if (string.IsNullOrEmpty(arg) || Regex.IsMatch(arg, "[^\\w" + (allowSpaces ? "\\s" : "") + "]+"))
                     return true;
 
             return false;

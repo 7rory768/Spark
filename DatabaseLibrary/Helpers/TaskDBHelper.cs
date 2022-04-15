@@ -58,13 +58,13 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (isNotAlphaNumeric(name))
+                if (isNotAlphaNumeric(true, name))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name");
                 }
-                else if (priority < 1)
+                else if (priority < 0)
                 {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive non-zero priority");
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive priority");
                 }
                 else if (description.Contains('`'))
                 {
@@ -107,7 +107,7 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (isNotAlphaNumeric(name))
+                if (isNotAlphaNumeric(true, name))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name");
                 }
@@ -151,7 +151,7 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (isNotAlphaNumeric(username))
+                if (isNotAlphaNumeric(false, username))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
                 }
@@ -184,7 +184,7 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (isNotAlphaNumeric(username))
+                if (isNotAlphaNumeric(false, username))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
                 }
@@ -218,9 +218,9 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (newPriority < 1)
+                if (newPriority < 0)
                 {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive non-zero position");
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive position");
                 }
 
                 // Add to database

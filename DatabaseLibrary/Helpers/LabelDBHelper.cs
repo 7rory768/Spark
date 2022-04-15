@@ -29,7 +29,7 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (isNotAlphaNumeric(name))
+                if (isNotAlphaNumeric(true, name))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username.");
                 }

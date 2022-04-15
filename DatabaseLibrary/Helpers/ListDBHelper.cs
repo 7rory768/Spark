@@ -30,14 +30,16 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (isNotAlphaNumeric(name))
+                if (isNotAlphaNumeric(true, name))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name");
                 }
-                else if (position < 1)
+                else if (position < 0)
                 {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive non-zero position");
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive position");
                 }
+
+                name = MySQLEscape(name);
 
                 // Add to database
                 DataTable table = context.ExecuteDataQueryProcedure
@@ -68,9 +70,9 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (newPosition < 1)
+                if (newPosition < 0)
                 {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive non-zero position");
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive position");
                 }
 
                 // Add to database

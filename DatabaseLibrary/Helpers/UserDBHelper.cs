@@ -30,7 +30,7 @@ namespace DatabaseLibrary.Helpers
         {
             try
             {
-                if (isNotAlphaNumeric(username.Trim()))
+                if (isNotAlphaNumeric(false, username.Trim()))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid user name.");
                 }
@@ -226,8 +226,8 @@ namespace DatabaseLibrary.Helpers
                 //}
                 //else
                 //{
-                    statusResponse = new StatusResponse("User information successfully changed");
-                    return fromRow(row);
+                statusResponse = new StatusResponse("User information successfully changed");
+                return fromRow(row);
                 //}
             }
             catch (Exception exception)
