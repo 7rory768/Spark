@@ -201,7 +201,7 @@ END;");
             procedures.Add(@"DROP PROCEDURE IF EXISTS `getTasks`; CREATE PROCEDURE IF NOT EXISTS `getTasks`(IN _listId INT)
 BEGIN
 	
-	SELECT * FROM tasks WHERE listId=_listId ORDER BY position ASC;
+	SELECT * FROM tasks WHERE listId=_listId ORDER BY priority ASC;
 
 END;");
 
