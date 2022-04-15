@@ -26,17 +26,13 @@ namespace DatabaseLibrary.Helpers
                             );
         }
 
-        public static TaskList? Add(int projectId, string name, int position, DbContext context, out StatusResponse statusResponse)
+        public static TaskList? Add(int projectId, string name, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
                 if (isNotAlphaNumeric(true, name))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name");
-                }
-                else if (position < 0)
-                {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive position");
                 }
 
                 name = MySQLEscape(name);
@@ -48,8 +44,7 @@ namespace DatabaseLibrary.Helpers
                         parameters: new Dictionary<string, object>()
                         {
                             { "_projectId", projectId },
-                            { "_name", name },
-                            { "_position", position},
+                            { "_name", name }
                         },
                         message: out string message
                     );
@@ -57,6 +52,41 @@ namespace DatabaseLibrary.Helpers
                     throw new Exception(message);
 
                 statusResponse = new StatusResponse("Created list successfully");
+                return fromRow(table.Rows[0]);
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return null;
+            }
+        }
+
+        public static TaskList? Update(TaskList taskList, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                if (isNotAlphaNumeric(true, taskList.name))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name");
+                }
+
+                taskList.name = MySQLEscape(taskList.name);
+
+                // Add to database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "updateList",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_id", taskList.id },
+                            { "_name", taskList.name }
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                statusResponse = new StatusResponse("Updated list successfully");
                 return fromRow(table.Rows[0]);
             }
             catch (Exception exception)

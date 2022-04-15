@@ -37,6 +37,21 @@ namespace Spark.Controllers
             return response;
         }
 
+        // Gets all lists for a project
+        [HttpPost]
+        [Route("update")]
+        public ResponseMessage Update([FromBody] TaskList taskList)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = ListHelper.Update(getUser(), taskList,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
         // Moves a list
         [HttpPost]
         [Route("move")]

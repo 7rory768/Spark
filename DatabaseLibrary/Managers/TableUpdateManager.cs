@@ -141,8 +141,11 @@ BEGIN
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `createList`; CREATE PROCEDURE IF NOT EXISTS `createList`(IN _projectId INT, IN _name VARCHAR(255), IN _position INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createList`; CREATE PROCEDURE IF NOT EXISTS `createList`(IN _projectId INT, IN _name VARCHAR(255))
 BEGIN
+	DECLARE _position INT;
+	
+	SELECT COUNT(position) INTO _position FROM `lists` WHERE projectId=_projectId;
 	
 	INSERT INTO `lists` (projectId, name, position) VALUES (_projectId, _name, _position);
 	
@@ -272,6 +275,15 @@ BEGIN
 SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS members ON (projects.teamId = members.teamId) WHERE projects.id=_projectID AND members.username=_username LIMIT 1;
 
 END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `updateList; CREATE PROCEDURE IF NOT EXISTS `updateList`(IN _id INT, IN _name varchar(255))
+BEGIN
+	
+	UPDATE lists SET name=_name WHERE id=_id;
+	
+	SELECT * FROM lists WHERE id=_id;
+
+END");
 
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
