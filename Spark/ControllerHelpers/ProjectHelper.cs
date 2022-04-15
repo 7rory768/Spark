@@ -23,6 +23,17 @@ namespace Spark.ControllerHelpers
         /// Gets list of participating projects.
         /// </summary>
         /// <param name="includeDetailedErrors">States whether the internal server error message should be detailed or not.</param>
+        public static ResponseMessage Get(User user, int projectId,
+            DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            var instances = DatabaseLibrary.Helpers.ProjectDBHelper.Get(user.username, projectId, context, out StatusResponse statusResponse);
+            return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the projects.");
+        }
+
+        /// <summary>
+        /// Gets list of participating projects.
+        /// </summary>
+        /// <param name="includeDetailedErrors">States whether the internal server error message should be detailed or not.</param>
         public static ResponseMessage GetParticipatingProjects(User user,
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {

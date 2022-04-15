@@ -52,5 +52,20 @@ namespace Spark.Controllers
             return response;
         }
 
+        // Creates a new project
+        [HttpGet]
+        [Route("{id}")]
+        public ResponseMessage Get(int id)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = ProjectHelper.Get(getUser(), id,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
     }
 }

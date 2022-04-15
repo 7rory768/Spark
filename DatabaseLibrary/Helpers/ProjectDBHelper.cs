@@ -51,9 +51,10 @@ namespace DatabaseLibrary.Helpers
                     statusResponse = new StatusResponse("User does not have permissions to create a project!");
                     return null;
                 }
-                    
+
                 // If manager
-                else {
+                else
+                {
                     // Add to database if Manager of team
                     DataTable table = context.ExecuteDataQueryProcedure
                         (
@@ -131,6 +132,41 @@ namespace DatabaseLibrary.Helpers
             {
                 statusResponse = new StatusResponse(exception);
                 return projects;
+            }
+        }
+
+        public static Project? Get(string username, int projectId, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                if (isNotAlphaNumeric(username.Trim()))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username.");
+                }
+
+                // Get from database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getProject",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_username", username },
+                            { "_projectId", projectId},
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                // Return value
+                statusResponse = new StatusResponse("Got project successfully");
+
+                return fromRow(table.Rows[0]);
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return null;
             }
         }
 
