@@ -18,6 +18,13 @@ namespace Spark.ControllerHelpers
             return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the teams.");
         }
 
+        // Get list of members in a team
+        public static ResponseMessage GetMembers(int id, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            var instances = DatabaseLibrary.Helpers.UserDBHelper.GetAllMembers(id, context, out StatusResponse statusResponse);
+            return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the teams.");
+        }
+
         // Add/Creates a new team
         public static ResponseMessage Add(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {

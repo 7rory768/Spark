@@ -273,6 +273,14 @@ SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS membe
 
 END;");
 
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamMembers`;
+			CREATE PROCEDURE IF NOT EXISTS `getTeamMembers`(IN `_teamId` integer)
+			BEGIN
+
+				SELECT users.* FROM `users` AS users INNER JOIN `team_members` AS members ON(users.username = members.username) WHERE members.teamId = _teamId;
+
+			END;");
+
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }

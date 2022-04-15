@@ -68,6 +68,40 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
+        public static List<User> GetAllMembers(int id, DbContext context, out StatusResponse statusResponse)
+        {
+            List<User> teamMembers = new List<User>();
+
+            try
+            {
+                // Get from database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getTeamMembers",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_teamId", id }
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                // Return value
+                statusResponse = new StatusResponse("Got team members successfully" + id);
+
+                foreach (DataRow row in table.Rows)
+                    teamMembers.Add(fromRow(row));
+
+                return teamMembers;
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return teamMembers;
+            }
+        }
+
         public static User? Login(string username, string password, DbContext context, out StatusResponse statusResponse)
         {
             try

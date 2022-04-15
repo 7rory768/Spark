@@ -52,7 +52,7 @@ namespace Spark.Controllers
             return response;
         }
 
-        // Creates a new project
+        // Gets a project
         [HttpGet]
         [Route("{id}")]
         public ResponseMessage Get(int id)

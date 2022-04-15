@@ -37,6 +37,21 @@ namespace Spark.Controllers
             return response;
         }
 
+        // Get all members in a team
+        [HttpGet]
+        [Route("{id}")]
+        public ResponseMessage GetMembers(int id)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = TeamHelper.GetMembers(id,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
         // Creates a new team
         [HttpPost]
         [Route("create")]

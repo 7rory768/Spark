@@ -20,7 +20,6 @@ namespace DatabaseLibrary.Helpers
                             );
         }
 
-
         /// <summary>
         /// Get all team the current user can see
         /// </summary>
