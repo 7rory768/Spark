@@ -308,8 +308,15 @@ BEGIN
 	SELECT username FROM assigned_to WHERE taskId=_taskId;
 
 END;");
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamProjects`;
+			CREATE PROCEDURE IF NOT EXISTS `getTeamProjects`(IN `_teamId` integer)
+			BEGIN
 
-            foreach (string query in procedures)
+				SELECT projects.* FROM `projects` AS projects INNER JOIN `teams` AS teams ON(projects.teamId = teams.id) WHERE teams.id = _teamId;
+
+			END;");
+
+			foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }
 

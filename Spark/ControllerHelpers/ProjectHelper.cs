@@ -40,5 +40,11 @@ namespace Spark.ControllerHelpers
             var instances = DatabaseLibrary.Helpers.ProjectDBHelper.GetAll(user.username, context, out StatusResponse statusResponse);
             return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the projects.");
         }
+
+        public static ResponseMessage GetTeamProjects(int id, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            var instances = DatabaseLibrary.Helpers.ProjectDBHelper.GetTeamProjects(id, context, out StatusResponse statusResponse);
+            return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the projects.");
+        }
     }
 }

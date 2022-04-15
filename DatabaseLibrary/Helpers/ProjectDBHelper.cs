@@ -135,6 +135,41 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
+        // Get all the projects in a team
+        public static List<Project> GetTeamProjects(int id, DbContext context, out StatusResponse statusResponse)
+        {
+            List<Project> projects = new List<Project>();
+
+            try
+            {
+                // Get from database
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getTeamProjects",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_teamId", id },
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                // Return value
+                statusResponse = new StatusResponse("Got team projects successfully");
+
+                foreach (DataRow row in table.Rows)
+                    projects.Add(fromRow(row));
+
+                return projects;
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return projects;
+            }
+        }
+
         public static Project? Get(string username, int projectId, DbContext context, out StatusResponse statusResponse)
         {
             try
