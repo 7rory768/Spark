@@ -9,8 +9,8 @@ namespace Spark.ControllerHelpers
     {
         public static ResponseMessage Add(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
-            if (!ContainsRequiredKeys(data, "projectId", "listId", "name", "priority"))
-                return GetMissingKeysResponse(data, out statusCode, includeDetailedErrors, "projectId", "listId", "name", "priority");
+            if (!ContainsRequiredKeys(data, "projectId", "listId", "name"))
+                return GetMissingKeysResponse(data, out statusCode, includeDetailedErrors, "projectId", "listId", "name");
 
             // Extract paramters
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -18,13 +18,19 @@ namespace Spark.ControllerHelpers
             int listId = data["listId"].Value<int>();
             string name = data["name"].Value<string>();
             string description = data["description"].Value<string>();
-            int priority = data["priority"].Value<int>();
-            data.TryGetValue("deadline", out JToken deadline);
-            int completionPoints = data["completionPoints"].Value<int>();
+            DateOnly? deadline = data.ContainsKey("deadline") ? DateOnly.FromDateTime(data["deadline"].Value<DateTime>().Date) : null;
+            int completionPoints = data.ContainsKey("completionPoints") ? data["completionPoints"].Value<int>() : 0;
+
+            List<string> assignedUsers = new List<string>();
+            if (data.ContainsKey("assignedUsers"))
+            {
+                foreach (JObject obj in data["assignedUsers"])
+                    assignedUsers.Add(obj["username"].Value<string>());
+            }
 #pragma warning restore CS8604 // Possible null reference argument.
 
 
-            var instance = DatabaseLibrary.Helpers.TaskDBHelper.Add(projectId, listId, name, description, priority, deadline?.Value<DateOnly>("deadline"), completionPoints, context, out StatusResponse statusResponse);
+            var instance = DatabaseLibrary.Helpers.TaskDBHelper.Add(projectId, listId, name, description, deadline, completionPoints, assignedUsers, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a task.");
         }
         public static ResponseMessage Update(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
