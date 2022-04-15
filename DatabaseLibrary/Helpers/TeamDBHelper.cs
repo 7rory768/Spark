@@ -63,7 +63,7 @@ namespace DatabaseLibrary.Helpers
         }
 
         // Adding team to the database
-        public static Team? Add(string username, int id, string name, string mgrUsername, DbContext context, out StatusResponse statusResponse)
+        public static Team? Add(string name, string mgrUsername, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
@@ -80,7 +80,6 @@ namespace DatabaseLibrary.Helpers
                         procedure: "createTeam",
                         parameters: new Dictionary<string, object>()
                         {
-                            { "_id", id },
                             { "_name", name },
                             { "_mgrUsername", mgrUsername},
                         },
@@ -100,7 +99,6 @@ namespace DatabaseLibrary.Helpers
                 else
                 {
                     statusResponse = new StatusResponse("Created team successfully");
-
                     return fromRow(row);
                 }
             }
@@ -110,6 +108,34 @@ namespace DatabaseLibrary.Helpers
                 statusResponse = new StatusResponse(exception);
                 return null;
             }
+        }
+
+        public static bool Delete(int id, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                // Remove from database
+                int rowsAffected = context.ExecuteNonQueryProcedure
+                    (
+                        procedure: "deleteTeam",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_id", id },
+                        },
+                        message: out string message
+                    );
+                if (rowsAffected < 1)
+                    throw new Exception(message);
+
+                statusResponse = new StatusResponse("Deleted team successfully");
+                return true;
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+            }
+
+            return false;
         }
 
     }

@@ -59,7 +59,22 @@ namespace Spark.Controllers
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = TeamHelper.Add(getUser(), data,
+            var response = TeamHelper.Add(data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
+        // Deletes a project
+        [HttpDelete]
+        [Route("delete/{id}")]
+        public ResponseMessage Delete(int id)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = TeamHelper.DeleteTeam(id,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());

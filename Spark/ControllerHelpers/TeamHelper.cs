@@ -26,18 +26,22 @@ namespace Spark.ControllerHelpers
         }
 
         // Add/Creates a new team
-        public static ResponseMessage Add(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        public static ResponseMessage Add(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             // Extract paramters
-            int id = data["id"].Value<int>();
             string name = data["name"].Value<string>();
             string mgrUsername = data["mgrUsername"].Value<string>(); 
 
             // Add instance to database
-            var instance = DatabaseLibrary.Helpers.TeamDBHelper.Add(user.username, id, name, mgrUsername, context, out StatusResponse statusResponse);
+            var instance = DatabaseLibrary.Helpers.TeamDBHelper.Add(name, mgrUsername, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a new team.");
         }
 
-        
+        //Delete team
+        public static ResponseMessage DeleteTeam(int id, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            bool success = DatabaseLibrary.Helpers.TeamDBHelper.Delete(id, context, out StatusResponse statusResponse);
+            return getResponse(success, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while deleting the label.");
+        }
     }
 }

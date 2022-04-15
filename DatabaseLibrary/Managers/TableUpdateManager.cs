@@ -307,6 +307,31 @@ END");
 
 			END;");
 
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTeam`; CREATE PROCEDURE IF NOT EXISTS `deleteTeam`(IN _id INT)
+			BEGIN
+	
+				DELETE FROM teams WHERE id = _id;
+
+			END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `createTeam`; 
+			CREATE PROCEDURE IF NOT EXISTS `createTeam`(IN `_name` varchar(255),IN `_mgrUsername` varchar(255))
+			BEGIN
+
+				INSERT INTO `teams` (`name`, `mgrUsername`) VALUES (_name, _mgrUsername);
+
+				SELECT * FROM `teams` WHERE id = @@IDENTITY;
+	
+			END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getAllUsers`; 
+			CREATE PROCEDURE IF NOT EXISTS `getAllUsers`()
+			BEGIN
+
+				SELECT * FROM users;
+	
+			END;");
+
 			foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }
