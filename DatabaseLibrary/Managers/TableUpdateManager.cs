@@ -80,7 +80,7 @@ IF
 			CREATE PROCEDURE `createProject`(IN `_teamId` integer,IN `_name` varchar(255),IN `_budget` integer)
 BEGIN
 
-			INSERT INTO `projects` (`teamId`, `name`, `budget`, `mgrUsername`) VALUES (_teamId, _name, _budget);
+			INSERT INTO `projects` (`teamId`, `name`, `budget`) VALUES (_teamId, _name, _budget);
 
 			SELECT * FROM `projects` WHERE projects.id=@@IDENTITY;
 
@@ -272,8 +272,15 @@ BEGIN
 SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS members ON (projects.teamId = members.teamId) WHERE projects.id=_projectID AND members.username=_username LIMIT 1;
 
 END;");
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamManager`; CREATE PROCEDURE IF NOT EXISTS `getTeamManager`(IN `_teamId` integer, IN `_user` varchar(255))
+BEGIN
 
-            foreach (string query in procedures)
+	SELECT teams.* FROM `teams` AS teams WHERE teams.mgrUsername = _user AND teams.id = _teamId;
+
+			END;");
+
+
+			foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }
 
