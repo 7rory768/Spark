@@ -7,7 +7,7 @@ namespace BusinessLibrary.Models
     {
         public TaskList(int id, int projectId, string name, DateTime? dateCreated, int position)
         {
-            this.projectId = id;
+            this.id = id;
             this.projectId = projectId;
             this.name = name;
             this.dateCreated = dateCreated;

@@ -161,7 +161,7 @@ END;");
 BEGIN
 	DECLARE _oldPosition INT;
 	
-	SELECT position INTO _oldPosition FROM `lists` WHERE id=_id;
+	SELECT position INTO _oldPosition FROM `lists` WHERE id=_listId;
 	
 	IF _newPosition > _oldPosition THEN
 		UPDATE `lists` SET position=position-1 WHERE projectId=_projectId AND position > _oldPosition AND position <= _newPosition;

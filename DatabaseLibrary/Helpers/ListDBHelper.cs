@@ -82,7 +82,7 @@ namespace DatabaseLibrary.Helpers
                         parameters: new Dictionary<string, object>()
                         {
                             { "_projectId", projectId },
-                            { "listId", listId},
+                            { "_listId", listId},
                             { "_newPosition", newPosition},
                         },
                         message: out string message
