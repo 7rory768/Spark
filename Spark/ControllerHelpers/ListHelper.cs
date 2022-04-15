@@ -13,11 +13,16 @@ namespace Spark.ControllerHelpers
             // Extract paramters
             int projectId = data["projectId"].Value<int>();
             string name = data["name"].Value<string>();
-            int position = data["position"].Value<int>();
 
-            var instance = DatabaseLibrary.Helpers.ListDBHelper.Add(projectId, name, position, context, out StatusResponse statusResponse);
+            var instance = DatabaseLibrary.Helpers.ListDBHelper.Add(projectId, name, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a list.");
         }
+        public static ResponseMessage Update(User user, TaskList taskList, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            var instance = DatabaseLibrary.Helpers.ListDBHelper.Update(taskList, context, out StatusResponse statusResponse);
+            return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a list.");
+        }
+
         public static ResponseMessage MoveList(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             // Extract paramters
@@ -40,8 +45,8 @@ namespace Spark.ControllerHelpers
         public static ResponseMessage DeleteList(User user, int listId,
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
-            bool success = DatabaseLibrary.Helpers.ListDBHelper.Delete(listId, context, out StatusResponse statusResponse);
-            return getResponse(success, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while deleting the label.");
+            var instances = DatabaseLibrary.Helpers.ListDBHelper.Delete(listId, context, out StatusResponse statusResponse);
+            return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while deleting the label.");
         }
     }
 }

@@ -80,7 +80,7 @@ IF
 			CREATE PROCEDURE `createProject`(IN `_teamId` integer,IN `_name` varchar(255),IN `_budget` integer)
 BEGIN
 
-			INSERT INTO `projects` (`teamId`, `name`, `budget`, `mgrUsername`) VALUES (_teamId, _name, _budget);
+			INSERT INTO `projects` (`teamId`, `name`, `budget`) VALUES (_teamId, _name, _budget);
 
 			SELECT * FROM `projects` WHERE projects.id=@@IDENTITY;
 
@@ -141,8 +141,11 @@ BEGIN
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `createList`; CREATE PROCEDURE IF NOT EXISTS `createList`(IN _projectId INT, IN _name VARCHAR(255), IN _position INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createList`; CREATE PROCEDURE IF NOT EXISTS `createList`(IN _projectId INT, IN _name VARCHAR(255))
 BEGIN
+	DECLARE _position INT;
+	
+	SELECT COUNT(position) INTO _position FROM `lists` WHERE projectId=_projectId;
 	
 	INSERT INTO `lists` (projectId, name, position) VALUES (_projectId, _name, _position);
 	
@@ -272,6 +275,21 @@ BEGIN
 SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS members ON (projects.teamId = members.teamId) WHERE projects.id=_projectID AND members.username=_username LIMIT 1;
 
 END;");
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamManager`; CREATE PROCEDURE IF NOT EXISTS `getTeamManager`(IN `_teamId` integer, IN `_user` varchar(255))
+BEGIN
+
+	SELECT teams.* FROM `teams` AS teams WHERE teams.mgrUsername = _user AND teams.id = _teamId;
+
+			END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `updateList; CREATE PROCEDURE IF NOT EXISTS `updateList`(IN _id INT, IN _name varchar(255))
+BEGIN
+	
+	UPDATE lists SET name=_name WHERE id=_id;
+	
+	SELECT * FROM lists WHERE id=_id;
+
+END");
 
 			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamMembers`;
 			CREATE PROCEDURE IF NOT EXISTS `getTeamMembers`(IN `_teamId` integer)
