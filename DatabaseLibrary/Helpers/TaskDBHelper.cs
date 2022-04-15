@@ -13,12 +13,12 @@ namespace DatabaseLibrary.Helpers
             Task task = new Task(
                             id: int.Parse(row["id"].ToString()),
                             projectId: int.Parse(row["projectId"].ToString()),
-                            listName: row["listName"].ToString(),
+                            listId: int.Parse(row["listId"].ToString()),
                             name: row["name"].ToString(),
                             description: row["description"].ToString(),
                             dateCreated: DateTime.Parse(row["dateCreated"].ToString()).ToLocalTime(),
                             priority: int.Parse(row["priority"].ToString()),
-                            deadline: DateOnly.Parse(row["deadline"].ToString()),
+                            deadline: string.IsNullOrEmpty(row["deadline"].ToString()) ? null : DateOnly.Parse(row["deadline"].ToString().Split(" ")[0]),
                             completed: bool.Parse(row["completed"].ToString()),
                             completionPoints: int.Parse(row["completionPoints"].ToString())
                             );
@@ -41,7 +41,7 @@ namespace DatabaseLibrary.Helpers
                     procedure: "getAssignedToTask",
                     parameters: new Dictionary<string, object>()
                     {
-                            { "_id", taskId },
+                            { "_taskId", taskId },
                     },
                     message: out string message
                 );
@@ -54,17 +54,13 @@ namespace DatabaseLibrary.Helpers
             return assignedToTask;
         }
 
-        public static Task? Add(int projectId, int listId, string name, string description, int priority, DateOnly? deadline, int completionPoints, DbContext context, out StatusResponse statusResponse)
+        public static Task? Add(int projectId, int listId, string name, string description, DateOnly? deadline, int completionPoints, List<string> assignedUsers, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
                 if (isNotAlphaNumeric(true, name))
                 {
                     throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid name");
-                }
-                else if (priority < 0)
-                {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a positive priority");
                 }
                 else if (description.Contains('`'))
                 {
@@ -77,14 +73,13 @@ namespace DatabaseLibrary.Helpers
                 // Add to database
                 DataTable table = context.ExecuteDataQueryProcedure
                     (
-                        procedure: "createList",
+                        procedure: "createTask",
                         parameters: new Dictionary<string, object>()
                         {
                             { "_projectId", projectId },
                             { "_listId", listId },
                             { "_name", name},
                             { "_description", description},
-                            { "_priority", priority},
                             { "_deadline", deadline },
                             { "_completionPoints", completionPoints },
                         },
@@ -93,7 +88,12 @@ namespace DatabaseLibrary.Helpers
                 if (table == null)
                     throw new Exception(message);
 
-                statusResponse = new StatusResponse("Created list successfully");
+                int taskId = int.Parse(table.Rows[0]["id"].ToString());
+
+                foreach (string username in assignedUsers)
+                    assignToTask(taskId, username, context, out statusResponse);
+
+                statusResponse = new StatusResponse("Created task successfully");
                 return fromRow(table.Rows[0], context);
             }
             catch (Exception exception)

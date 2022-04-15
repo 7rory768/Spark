@@ -185,10 +185,13 @@ BEGIN
 
 END");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `createTask`; CREATE PROCEDURE IF NOT EXISTS `createTask`(IN _projectId INT, IN _listId INT, IN _name VARCHAR(255), IN _description TEXT, IN _priority INT, IN _completionPoints INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createTask`; CREATE PROCEDURE IF NOT EXISTS `createTask`(IN _projectId INT, IN _listId INT, IN _name VARCHAR(255), IN _description TEXT, IN _deadline DATE, IN _completionPoints INT)
 BEGIN
+	DECLARE _priority INT(11);
+	
+	SELECT COUNT(id) INTO _priority FROM tasks WHERE projectId=_projectId AND listId=_listId;
 
-	INSERT INTO `tasks` (projectId, listId, `name`, description, priority, completionPoints) VALUES (_projectId, _listId, _description, _priority, _completionPoints);
+	INSERT INTO `tasks` (projectId, listId, `name`, description, deadline, priority, completionPoints) VALUES (_projectId, _listId, _name, _description, _deadline, _priority, _completionPoints);
 	
 	SELECT * FROM tasks WHERE id=@@IDENTITY;
 
@@ -299,6 +302,12 @@ END");
 
 			END;");
 
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getAssignedToTask`; CREATE PROCEDURE IF NOT EXISTS `getAssignedToTask`(IN _taskId INT)
+BEGIN
+	
+	SELECT username FROM assigned_to WHERE taskId=_taskId;
+
+END;");
 			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamProjects`;
 			CREATE PROCEDURE IF NOT EXISTS `getTeamProjects`(IN `_teamId` integer)
 			BEGIN
