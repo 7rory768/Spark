@@ -20,11 +20,18 @@ namespace Spark.ControllerHelpers
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a new Reward.");
         }
 
-        //// 
-        //public static ResponseMessage GetUserTeamRewards(User user, int id, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
-        //{
-        //    var instances = DatabaseLibrary.Helpers.RewardDBHelper.GetTotal(user.username, id, context, out StatusResponse statusResponse);
-        //    return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the projects.");
-        //}
+        // get total for user
+        public static ResponseMessage GetUserRewards(User user, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            int total = DatabaseLibrary.Helpers.RewardDBHelper.getTotal(user.username, context, out StatusResponse statusResponse);
+            return getResponse(total, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the rewards for user.");
+        }
+
+        // get total for user on team
+        public static ResponseMessage GetUserRewardsInTeam(User user, int teamId, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            int total = DatabaseLibrary.Helpers.RewardDBHelper.getTotalInTeam(user.username, teamId, context, out StatusResponse statusResponse);
+            return getResponse(total, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the rewards for user within team.");
+        }
     }
 }

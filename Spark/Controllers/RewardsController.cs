@@ -37,20 +37,35 @@ namespace Spark.Controllers
             return response;
         }
 
-        //// Gets a user's total points for a team
-        //[HttpGet]
-        //[Route("team/{id}")]
-        //public ResponseMessage GetUserTeamRewards(int id)
-        //{
-        //    if (!isAuthenticated()) return getNotAuthenticatedResponse();
+        // Gets a user's total points
+        [HttpGet]
+        [Route("user")]
+        public ResponseMessage GetUserTeamRewards()
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-        //    var response = RewardHelper.GetUserTeamRewards(getUser(), id,
-        //        context: Database.DbContext,
-        //        statusCode: out HttpStatusCode statusCode,
-        //        includeDetailedErrors: HostingEnvironment.IsDevelopment());
-        //    HttpContext.Response.StatusCode = (int)statusCode;
-        //    return response;
-        //}
+            var response = RewardHelper.GetUserRewards(getUser(),
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
+        // Gets a user's total points for a team
+        [HttpPost]
+        [Route("team/{id}")]
+        public ResponseMessage GetUserTeamRewards([FromBody] User user, int id)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = RewardHelper.GetUserRewardsInTeam(user, id,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
 
     }
 }

@@ -88,10 +88,10 @@ namespace Spark.ControllerHelpers
         }
 
 
-        public static ResponseMessage DeleteTask(User user, int taskId,
+        public static ResponseMessage DeleteTask(User user, int taskId, int listId,
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
-            bool success = DatabaseLibrary.Helpers.TaskDBHelper.Delete(taskId, context, out StatusResponse statusResponse);
+            bool success = DatabaseLibrary.Helpers.TaskDBHelper.Delete(taskId, listId, context, out StatusResponse statusResponse);
             return getResponse(success, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while deleting the label.");
         }
     }

@@ -178,10 +178,15 @@ BEGIN
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteList`;CREATE PROCEDURE IF NOT EXISTS `deleteList`(IN `_id` INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteList`;CREATE PROCEDURE IF NOT EXISTS `deleteList`(IN _projectId INT, IN `_listId` INT)
 BEGIN
-
-	DELETE FROM `lists` WHERE id=_id;
+	DECLARE _oldPosition INT;
+	
+	SELECT position INTO _oldPosition FROM `lists` WHERE id=_listId;
+	
+	DELETE FROM `lists` WHERE id=_listId;
+	
+	UPDATE `lists` SET position=position-1 WHERE projectId=_projectId AND position > _oldPosition;
 
 END");
 
@@ -197,10 +202,15 @@ BEGIN
 
 END;");
 
-            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTask`; CREATE PROCEDURE IF NOT EXISTS `deleteTask`(IN _id INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTask`; CREATE PROCEDURE IF NOT EXISTS `deleteTask`(IN _listId INT, IN _taskId INT)
 BEGIN
+	DECLARE _oldPriority INT;
 	
-	DELETE FROM tasks WHERE id=_id;
+	SELECT priority INTO _oldPriority FROM `tasks` WHERE id=_taskId;
+	
+	DELETE FROM tasks WHERE id=_taskId;
+	
+	UPDATE `tasks` SET priority=priority-1 WHERE listId=_listId AND priority > _oldPriority;
 
 END;");
 
@@ -333,11 +343,10 @@ BEGIN
 
             procedures.Add(@"DROP PROCEDURE IF EXISTS `createTeam`; 
 			CREATE PROCEDURE IF NOT EXISTS `createTeam`(IN `_name` varchar(255),IN `_mgrUsername` varchar(255))
-			BEGIN
+BEGIN
 
 				INSERT INTO `teams` (`name`, `mgrUsername`) VALUES (_name, _mgrUsername);
 				INSERT INTO `team_members` (`teamId`, `username`) VALUES (@@IDENTITY, _mgrUsername);
-
 				SELECT * FROM `teams` WHERE id = @@IDENTITY;
 	
 			END;");
@@ -399,6 +408,20 @@ BEGIN
 	UPDATE checklist SET title=_title WHERE id=_id;
 
 END");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTotalPointsForUser`; CREATE PROCEDURE IF NOT EXISTS `getTotalPointsForUser`(IN _username VARCHAR(255))
+BEGIN
+
+	SELECT SUM(numPoints) AS totalPoints FROM rewards WHERE username=_username;
+
+END;");
+
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTotalPointsForUserInTeam`; CREATE PROCEDURE IF NOT EXISTS `getTotalPointsForUserInTeam`(IN _username VARCHAR(255), IN _teamId INT)
+BEGIN
+
+	SELECT SUM(numPoints) AS totalPoints FROM rewards WHERE username=_username AND teamId=_teamId;
+
+END;");
 
             foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);

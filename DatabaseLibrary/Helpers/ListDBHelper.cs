@@ -164,7 +164,7 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
-        public static bool Delete(int listId, DbContext context, out StatusResponse statusResponse)
+        public static bool Delete(int listId, int projectId, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
@@ -174,7 +174,8 @@ namespace DatabaseLibrary.Helpers
                         procedure: "deleteList",
                         parameters: new Dictionary<string, object>()
                         {
-                            { "_id", listId},
+                            { "_listId", listId},
+                            { "_projectId", projectId},
                         },
                         message: out string message
                     );

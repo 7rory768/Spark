@@ -42,10 +42,14 @@ namespace Spark.ControllerHelpers
         }
 
 
-        public static ResponseMessage DeleteList(User user, int listId,
+        public static ResponseMessage DeleteList(User user, JObject data,
             DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
-            var instances = DatabaseLibrary.Helpers.ListDBHelper.Delete(listId, context, out StatusResponse statusResponse);
+            // Extract paramters
+            int listId = data["id"].Value<int>();
+            int projectId = data["projectId"].Value<int>();
+
+            var instances = DatabaseLibrary.Helpers.ListDBHelper.Delete(listId, projectId, context, out StatusResponse statusResponse);
             return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while deleting the label.");
         }
     }

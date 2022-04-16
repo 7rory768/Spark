@@ -361,6 +361,7 @@ namespace DatabaseLibrary.Helpers
             {
                 foreach (ChecklistItem item in updateChecklist.items)
                 {
+                    item.checklistId = checklist.id; // update with new checklist id
                     checklist.items.Add(createChecklistItem(item, context));
                 }
             }
@@ -589,7 +590,7 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
-        public static bool Delete(int taskId, DbContext context, out StatusResponse statusResponse)
+        public static bool Delete(int taskId, int listId, DbContext context, out StatusResponse statusResponse)
         {
             try
             {
@@ -599,7 +600,8 @@ namespace DatabaseLibrary.Helpers
                         procedure: "deleteTask",
                         parameters: new Dictionary<string, object>()
                         {
-                            { "_id", taskId },
+                            { "_taskId", taskId },
+                            { "_listId", listId},
                         },
                         message: out string message
                     );

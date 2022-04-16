@@ -108,13 +108,13 @@ namespace Spark.Controllers
         }
 
         // Deletes a task
-        [HttpDelete]
-        [Route("{id}")]
-        public ResponseMessage Delete(int id)
+        [HttpPost]
+        [Route("delete")]
+        public ResponseMessage Delete([FromBody] Task task)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = TaskHelper.DeleteTask(getUser(), id,
+            var response = TaskHelper.DeleteTask(getUser(), task.id, task.listId,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());

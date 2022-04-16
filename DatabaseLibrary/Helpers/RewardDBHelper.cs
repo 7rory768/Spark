@@ -14,7 +14,7 @@ namespace DatabaseLibrary.Helpers
         private static Reward fromRow(DataRow row)
         {
             return new Reward(
-                //string username, int numPoints, int teamId, int projectId, DateTime dateGiven
+                            //string username, int numPoints, int teamId, int projectId, DateTime dateGiven
 
                             //id: int.Parse(row["id"].ToString()),
                             username: row["username"].ToString(),
@@ -90,43 +90,65 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
-        //// Get a user's total points for a team
-        //public static int GetTotal(string username, int id, DbContext context, out StatusResponse statusResponse)
-        //{
-        //    int totalPoints;
+        public static int getTotal(string username, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getTotalPointsForUser",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_username", username },
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
 
-        //    try
-        //    {
-        //        // Get from database
-        //        DataTable table = context.ExecuteDataQueryProcedure
-        //            (
-        //                procedure: "getUserTotalPoints",
-        //                parameters: new Dictionary<string, object>()
-        //                {
-        //                    { "_username", username },
-        //                    { "_teamId", id },
-        //                },
-        //                message: out string message
-        //            );
-        //        if (table == null)
-        //            throw new Exception(message);
+                DataRow row = table.Rows[0];
 
-        //        // Return value
-        //        statusResponse = new StatusResponse("Got users points successfully");
+                statusResponse = new StatusResponse("Got points for user!");
+                return int.Parse(row["totalPoints"].ToString());
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return -1;
+            }
+        }
 
-        //        totalPoints = table.Rows[0].Field<int>(0);
-        //        if (totalPoints != null)
-        //        {
-        //            return totalPoints;
-        //        }
+        public static int getTotalInTeam(string username, int teamId, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getTotalPointsForUserInTeam",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_username", username },
+                            { "_teamId", teamId },
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
 
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        statusResponse = new StatusResponse(exception);
-        //        return 0;
-        //    }
-        //}
+                DataRow row = table.Rows[0];
+
+                statusResponse = new StatusResponse("Got points for user in team!");
+                if (string.IsNullOrEmpty(row["totalPoints"].ToString())) {
+                    return 0;
+                }
+                else return int.Parse(row["totalPoints"].ToString());
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return -1;
+            }
+        }
 
     }
 }

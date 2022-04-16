@@ -83,13 +83,13 @@ namespace Spark.Controllers
         }
 
         // Deletes a list
-        [HttpDelete]
-        [Route("{id}")]
-        public ResponseMessage Delete(int id)
+        [HttpPost]
+        [Route("delete")]
+        public ResponseMessage Delete([FromBody] JObject data)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = ListHelper.DeleteList(getUser(), id,
+            var response = ListHelper.DeleteList(getUser(), data,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());
