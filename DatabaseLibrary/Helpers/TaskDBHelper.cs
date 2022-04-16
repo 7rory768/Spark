@@ -228,6 +228,7 @@ namespace DatabaseLibrary.Helpers
                             if (updateChecklist.title != oldChecklist.title)
                             {
                                 TaskDBHelper.updateChecklist(updateChecklist, context);
+                                oldChecklist.title = updateChecklist.title;
                             }
 
                             updateChecklistItems(updateChecklist, oldChecklist, context);
@@ -297,6 +298,8 @@ namespace DatabaseLibrary.Helpers
                         if (updateItem.description != oldItem.description || updateItem.completed != oldItem.completed)
                         {
                             TaskDBHelper.updateChecklistItem(updateItem, context);
+                            oldItem.description = updateItem.description;
+                            oldItem.completed = updateItem.completed;
                         }
 
                         break;
