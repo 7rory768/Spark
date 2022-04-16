@@ -41,5 +41,7 @@ namespace BusinessLibrary.Models
         public int completionPoints { get; set; }
         [JsonProperty]
         public List<User>? assignedUsers { get; set; }
+        [JsonProperty]
+        public List<Checklist>? checklists { get; set; }
     }
 }
