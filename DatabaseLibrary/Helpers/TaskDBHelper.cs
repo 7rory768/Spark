@@ -113,7 +113,7 @@ namespace DatabaseLibrary.Helpers
                     procedure: "getChecklistItems",
                     parameters: new Dictionary<string, object>()
                     {
-                            { "_checklistItem", checklist.id },
+                            { "_checklistId", checklist.id },
                     },
                     message: out string message
                 );
@@ -224,7 +224,14 @@ namespace DatabaseLibrary.Helpers
                         {
                             existsInUpdate = true;
 
-                            // TODO: Still exists, check if they equal eachother
+                            // UPDATE CHECKLIST
+                            if (updateChecklist.title != oldChecklist.title)
+                            {
+                                TaskDBHelper.updateChecklist(updateChecklist, context);
+                                oldChecklist.title = updateChecklist.title;
+                            }
+
+                            updateChecklistItems(updateChecklist, oldChecklist, context);
 
                             break;
                         }
@@ -244,7 +251,7 @@ namespace DatabaseLibrary.Helpers
                 {
                     bool newChecklist = true;
 
-                    foreach (Checklist oldChecklist in task.checklists)
+                    foreach (Checklist oldChecklist in newTask.checklists)
                     {
                         if (updateChecklist.id == oldChecklist.id)
                         {
@@ -272,6 +279,67 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
+        private static Checklist updateChecklistItems(Checklist updatedChecklist, Checklist oldChecklist, DbContext context)
+        {
+            // COMPARE CHANGES
+
+            for (int index = oldChecklist.items.Count - 1; index >= 0; index--)
+            {
+                ChecklistItem oldItem = oldChecklist.items[index];
+                bool existsInUpdate = false;
+
+                foreach (ChecklistItem updateItem in updatedChecklist.items)
+                {
+                    if (updateItem.id == oldItem.id)
+                    {
+                        existsInUpdate = true;
+
+                        // UPDATE CHECKLIST ITEM
+                        if (updateItem.description != oldItem.description || updateItem.completed != oldItem.completed)
+                        {
+                            TaskDBHelper.updateChecklistItem(updateItem, context);
+                            oldItem.description = updateItem.description;
+                            oldItem.completed = updateItem.completed;
+                        }
+
+                        break;
+                    }
+                }
+
+                if (!existsInUpdate)
+                {
+                    // DELETE CHECKLIST  ITEM
+                    if (deleteChecklistItem(oldItem, context))
+                    {
+                        oldChecklist.items.RemoveAt(index);
+                    }
+                }
+            }
+
+            foreach (ChecklistItem updateItem in updatedChecklist.items)
+            {
+                bool newItem = true;
+
+                foreach (ChecklistItem oldItem in oldChecklist.items)
+                {
+                    if (updateItem.id == oldItem.id)
+                    {
+                        newItem = false;
+                        break;
+                    }
+                }
+
+                // CREATE NEW CHECKLIST ITEM
+                if (newItem)
+                {
+                    ChecklistItem item = createChecklistItem(updateItem, context);
+                    if (item != null) oldChecklist.items.Add(item);
+                }
+            }
+
+            return oldChecklist;
+        }
+
         private static Checklist createChecklist(Checklist updateChecklist, DbContext context)
         {
             DataTable table = context.ExecuteDataQueryProcedure
@@ -291,7 +359,7 @@ namespace DatabaseLibrary.Helpers
 
             if (updateChecklist.items != null)
             {
-                foreach (ChecklistItem item in checklist.items)
+                foreach (ChecklistItem item in updateChecklist.items)
                 {
                     checklist.items.Add(createChecklistItem(item, context));
                 }
@@ -304,7 +372,7 @@ namespace DatabaseLibrary.Helpers
         {
             DataTable table = context.ExecuteDataQueryProcedure
                         (
-                            procedure: "createChecklist",
+                            procedure: "createChecklistItem",
                             parameters: new Dictionary<string, object>()
                             {
                             { "_checklistId", item.checklistId},
@@ -319,6 +387,39 @@ namespace DatabaseLibrary.Helpers
             return fromRowChecklistItem(table.Rows[0]);
         }
 
+        private static void updateChecklist(Checklist updateChecklist, DbContext context)
+        {
+            DataTable table = context.ExecuteDataQueryProcedure
+        (
+            procedure: "updateChecklist",
+            parameters: new Dictionary<string, object>()
+            {
+                            { "_id", updateChecklist.id},
+                            { "_title", updateChecklist.title}
+            },
+            message: out string message
+        );
+            if (table == null)
+                throw new Exception(message);
+        }
+
+        private static void updateChecklistItem(ChecklistItem updatedItem, DbContext context)
+        {
+            DataTable table = context.ExecuteDataQueryProcedure
+        (
+            procedure: "updateChecklistItem",
+            parameters: new Dictionary<string, object>()
+            {
+                            { "_id", updatedItem.id},
+                            { "_description", updatedItem.description},
+                            { "_completed", updatedItem.completed}
+            },
+            message: out string message
+        );
+            if (table == null)
+                throw new Exception(message);
+        }
+
         private static bool deleteChecklist(Checklist checklist, DbContext context)
         {
             DataTable table = context.ExecuteDataQueryProcedure
@@ -327,6 +428,23 @@ namespace DatabaseLibrary.Helpers
             parameters: new Dictionary<string, object>()
             {
                     { "_checklistId", checklist.id},
+            },
+            message: out string message
+        );
+            if (table == null)
+                throw new Exception(message);
+
+            return true;
+        }
+
+        private static bool deleteChecklistItem(ChecklistItem item, DbContext context)
+        {
+            DataTable table = context.ExecuteDataQueryProcedure
+        (
+            procedure: "deleteChecklistItem",
+            parameters: new Dictionary<string, object>()
+            {
+                    { "_itemId", item.id},
             },
             message: out string message
         );

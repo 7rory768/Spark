@@ -110,7 +110,7 @@ BEGIN
 SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS members ON (projects.teamId = members.teamId) WHERE members.username=_username;
 
 END;");
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getParticipatingTeams`; CREATE PROCEDURE IF NOT EXISTS `getParticipatingTeams`(IN `_username` varchar(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getParticipatingTeams`; CREATE PROCEDURE IF NOT EXISTS `getParticipatingTeams`(IN `_username` varchar(255))
 BEGIN
 
 SELECT teams.* FROM `teams` AS teams INNER JOIN `team_members` AS members ON(teams.id = members.teamId) WHERE members.username = _username;
@@ -118,7 +118,7 @@ SELECT teams.* FROM `teams` AS teams INNER JOIN `team_members` AS members ON(tea
 			END;");
 
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `createLabel`; CREATE PROCEDURE IF NOT EXISTS `createLabel`(IN _projectId INT, IN _name VARCHAR(255), IN _color CHAR(7))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createLabel`; CREATE PROCEDURE IF NOT EXISTS `createLabel`(IN _projectId INT, IN _name VARCHAR(255), IN _color CHAR(7))
 BEGIN
 
 	INSERT INTO `labels` (projectId, name, color) VALUES (_projectId, _name, _color);
@@ -238,14 +238,14 @@ BEGIN
 
 END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getAssignedToTask`; CREATE PROCEDURE IF NOT EXISTS PROCEDURE `getAssignedToTask`(IN _id INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getAssignedToTask`; CREATE PROCEDURE IF EXISTS PROCEDURE `getAssignedToTask`(IN _id INT)
 BEGIN
 
 SELECT * FROM USERS WHERE username IN (SELECT username FROM assigned_to WHERE taskId=_id);
 
 END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `assignToTask`; CREATE PROCEDURE IF NOT EXISTS `assignToTask`(IN _taskId INT, IN _username varchar(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `assignToTask`; CREATE PROCEDURE IF NOT EXISTS `assignToTask`(IN _taskId INT, IN _username varchar(255))
 BEGIN
 	
 	INSERT INTO assigned_to (taskId, username) VALUES (_taskId, _username);
@@ -254,7 +254,7 @@ BEGIN
 
 END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `unassignFromTask`; CREATE PROCEDURE IF NOT EXISTS `unassignFromTask`(IN _taskId INT, IN _username varchar(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `unassignFromTask`; CREATE PROCEDURE IF NOT EXISTS `unassignFromTask`(IN _taskId INT, IN _username varchar(255))
 BEGIN
 	
 	DELETE FROM assigned_to WHERE taskId=_taskId AND username=_username;
@@ -263,7 +263,7 @@ BEGIN
 
 END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `updateUser`; 
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `updateUser`; 
 			CREATE PROCEDURE IF NOT EXISTS `updateUser`(IN _username varchar(255),IN _fName varchar(255),IN _lName varchar(255),IN _password VARCHAR(255),IN _email VARCHAR(255))
 			BEGIN
 			UPDATE `users` SET fName = _fName, lName = _lName, `password` = _password, email = _email WHERE username = _username;
@@ -272,20 +272,20 @@ END;");
 
 			END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getProject`; CREATE PROCEDURE IF NOT EXISTS `getProject`(IN `_username` varchar(255), IN _projectId INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getProject`; CREATE PROCEDURE IF NOT EXISTS `getProject`(IN `_username` varchar(255), IN _projectId INT)
 BEGIN
 
 SELECT projects.* FROM `projects` AS projects INNER JOIN `team_members` AS members ON (projects.teamId = members.teamId) WHERE projects.id=_projectID AND members.username=_username LIMIT 1;
 
 END;");
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamManager`; CREATE PROCEDURE IF NOT EXISTS `getTeamManager`(IN `_teamId` integer, IN `_user` varchar(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamManager`; CREATE PROCEDURE IF NOT EXISTS `getTeamManager`(IN `_teamId` integer, IN `_user` varchar(255))
 BEGIN
 
 	SELECT teams.* FROM `teams` AS teams WHERE teams.mgrUsername = _user AND teams.id = _teamId;
 
 			END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `updateList; CREATE PROCEDURE IF NOT EXISTS `updateList`(IN _id INT, IN _name varchar(255))
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `updateList; CREATE PROCEDURE IF NOT EXISTS `updateList`(IN _id INT, IN _name varchar(255))
 BEGIN
 	
 	UPDATE lists SET name=_name WHERE id=_id;
@@ -294,7 +294,7 @@ BEGIN
 
 END");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamMembers`;
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamMembers`;
 			CREATE PROCEDURE IF NOT EXISTS `getTeamMembers`(IN `_teamId` integer)
 			BEGIN
 
@@ -302,13 +302,13 @@ END");
 
 			END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getAssignedToTask`; CREATE PROCEDURE IF NOT EXISTS `getAssignedToTask`(IN _taskId INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getAssignedToTask`; CREATE PROCEDURE IF NOT EXISTS `getAssignedToTask`(IN _taskId INT)
 BEGIN
 	
 	SELECT username FROM assigned_to WHERE taskId=_taskId;
 
 END;");
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamProjects`;
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getTeamProjects`;
 			CREATE PROCEDURE IF NOT EXISTS `getTeamProjects`(IN `_teamId` integer)
 			BEGIN
 
@@ -323,7 +323,7 @@ BEGIN
 
 			END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTeam`; CREATE PROCEDURE IF NOT EXISTS `deleteTeam`(IN _id INT)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTeam`; CREATE PROCEDURE IF NOT EXISTS `deleteTeam`(IN _id INT)
 			BEGIN
 	
 				DELETE FROM team_members WHERE teamId = _id;
@@ -331,7 +331,7 @@ BEGIN
 
 			END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `createTeam`; 
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createTeam`; 
 			CREATE PROCEDURE IF NOT EXISTS `createTeam`(IN `_name` varchar(255),IN `_mgrUsername` varchar(255))
 			BEGIN
 
@@ -342,7 +342,7 @@ BEGIN
 	
 			END;");
 
-			procedures.Add(@"DROP PROCEDURE IF EXISTS `getAllUsers`; 
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `getAllUsers`; 
 			CREATE PROCEDURE IF NOT EXISTS `getAllUsers`()
 BEGIN
 
@@ -359,7 +359,38 @@ BEGIN
 
 			END;");
 
-			foreach (string query in procedures)
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `createChecklist`; CREATE PROCEDURE IF NOT EXISTS `createChecklist`(IN `_taskId` INT, IN _title VARCHAR(255))
+BEGIN
+
+	INSERT INTO checklists (`taskId`, `title`) VALUES (_taskId, _title);
+	
+	SELECT * FROM checklists WHERE id=@@IDENTITY;
+
+END");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteChecklistItem`;
+CREATE PROCEDURE IF NOT EXISTS `deleteChecklistItem`(IN _itemId INT)
+BEGIN
+
+	DELETE FROM checlist_items WHERE id=_itemId;
+
+END;");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `updateChecklistItem`; CREATE PROCEDURE IF NOT EXISTS `updateChecklistItem`(IN _id INT, IN _description TEXT, IN _completed BOOLEAN)
+BEGIN
+
+	UPDATE checklist_items SET description=_description, completed=_completed WHERE id=_id;
+
+END");
+
+            procedures.Add(@"DROP PROCEDURE IF EXISTS `updateChecklist`; CREATE PROCEDURE IF NOT EXISTS PROCEDURE `updateChecklist`(IN _id INT, IN _title VARCHAR(255))
+BEGIN
+	
+	UPDATE checklist SET title=_title WHERE id=_id;
+
+END");
+
+            foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }
 

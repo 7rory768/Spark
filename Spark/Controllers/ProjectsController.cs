@@ -95,7 +95,7 @@ namespace Spark.Controllers
             return response;
         }
 
-        // Modifies a projects information
+        // Deletes a projects
         [HttpPost]
         [Route("delete")]
         public ResponseMessage DeleteProject([FromBody] JObject data)
