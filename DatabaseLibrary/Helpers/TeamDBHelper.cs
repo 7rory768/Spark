@@ -110,6 +110,38 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
+        public static bool AddMember(int id, string username, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                // Add to database if Manager of team
+                DataTable table = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "addMember",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_id", id },
+                            { "_username", username},
+                        },
+                        message: out string message
+                    );
+                if (table == null)
+                    throw new Exception(message);
+
+                DataRow row = table.Rows[0];
+
+                // Return value
+                statusResponse = new StatusResponse("Added team member successfully");
+                return true;
+            }
+
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+            }
+            return false;
+        }
+
         public static bool Delete(int id, DbContext context, out StatusResponse statusResponse)
         {
             try

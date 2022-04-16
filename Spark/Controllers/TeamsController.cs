@@ -67,6 +67,21 @@ namespace Spark.Controllers
             return response;
         }
 
+        
+        [HttpPost]
+        [Route("addMember")]
+        public ResponseMessage AddMember([FromBody] JObject data)
+        {
+            if (!isAuthenticated()) return getNotAuthenticatedResponse();
+
+            var response = TeamHelper.AddMember(data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
         // Deletes a project
         [HttpDelete]
         [Route("delete/{id}")]

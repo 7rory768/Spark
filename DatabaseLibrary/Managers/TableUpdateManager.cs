@@ -343,6 +343,16 @@ END;");
 	
 			END;");
 
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `addMember`; 
+			CREATE PROCEDURE IF NOT EXISTS `addMember`(IN `_id` INT,IN `_username` varchar(255))
+			BEGIN
+
+				INSERT INTO team_members (`teamId`, `username`) VALUES (_id, _username);
+			
+				SELECT * FROM `team_members` WHERE teamId = _id AND username = _username;
+	
+			END;");
+
 			foreach (string query in procedures)
                 dbContext.ExecuteNonQueryCommand(query, null, out string message);
         }

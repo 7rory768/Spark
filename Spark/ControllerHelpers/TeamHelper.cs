@@ -37,6 +37,17 @@ namespace Spark.ControllerHelpers
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a new team.");
         }
 
+        public static ResponseMessage AddMember(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            // Extract paramters
+            int id = data["id"].Value<int>();
+            string username = data["username"].Value<string>();
+
+            // Add instance to database
+            var instance = DatabaseLibrary.Helpers.TeamDBHelper.AddMember(id, username, context, out StatusResponse statusResponse);
+            return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a new team.");
+        }
+
         //Delete team
         public static ResponseMessage DeleteTeam(int id, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
