@@ -319,6 +319,7 @@ END;");
 			procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTeam`; CREATE PROCEDURE IF NOT EXISTS `deleteTeam`(IN _id INT)
 			BEGIN
 	
+				DELETE FROM team_members WHERE teamId = _id;
 				DELETE FROM teams WHERE id = _id;
 
 			END;");
