@@ -33,8 +33,6 @@ namespace DatabaseLibrary.Helpers
 
                 bool success = false;
 
-                // TODO: Make sure user is manager of the team first
-                // Rachel Added
                 // Get manager data from database
                 DataTable tableManager = context.ExecuteDataQueryProcedure
                     (
@@ -93,9 +91,7 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
-        /// <summary>
         /// Get all projects the current user can see
-        /// </summary>
         public static List<Project> GetAll(string username, DbContext context, out StatusResponse statusResponse)
         {
             List<Project> projects = new List<Project>();
@@ -205,5 +201,130 @@ namespace DatabaseLibrary.Helpers
             }
         }
 
+        // Updates a projects's info
+        public static Project Update(string username, int projectId, int teamId, string name, int budget, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+                if (isNotAlphaNumeric(true, name?.Trim()))
+                {
+                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid project name.");
+                }
+
+                bool success = false;
+
+                // Get manager data from database
+                DataTable tableManager = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getTeamManager",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_teamId", teamId },
+                            { "_user", username },
+                        },
+                        message: out string outMessage
+                    );
+                if (tableManager == null) // if user is not manager of the team
+                {
+                    statusResponse = new StatusResponse("User does not have permissions to create a project!");
+                    return null;
+                }
+
+                // If manager
+                else
+                {
+                    // Add to database if Manager of team
+                    DataTable table = context.ExecuteDataQueryProcedure
+                        (
+                            procedure: "updateProject",
+                            parameters: new Dictionary<string, object>()
+                            {
+                                { "_projectId", projectId},
+                                { "_teamId", teamId },
+                                { "_name", name },
+                                { "_budget", budget},
+                            },
+                            message: out string message
+                        );
+                    if (table == null)
+                        throw new Exception(message);
+
+                    DataRow row = table.Rows[0];
+
+                    // Return value
+                    if (string.IsNullOrEmpty(row["id"].ToString()))
+                    {
+                        statusResponse = new StatusResponse("Failed to update project");
+                        return null;
+                    }
+                    else
+                    {
+                        statusResponse = new StatusResponse("Updated project successfully");
+
+                        return fromRow(row);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return null;
+            }
+        }
+
+        // Deletes a projects
+        public static Boolean Delete(string username, int projectId, int teamId, DbContext context, out StatusResponse statusResponse)
+        {
+            try
+            {
+
+                bool success = false;
+
+                // Get manager data from database
+                DataTable tableManager = context.ExecuteDataQueryProcedure
+                    (
+                        procedure: "getTeamManager",
+                        parameters: new Dictionary<string, object>()
+                        {
+                            { "_teamId", teamId },
+                            { "_user", username },
+                        },
+                        message: out string outMessage
+                    );
+                if (tableManager == null) // if user is not manager of the team
+                {
+                    statusResponse = new StatusResponse("User does not have permissions to create a project!");
+                    return false;
+                }
+
+                // If manager
+                else
+                {
+                    // Add to database if Manager of team
+                    DataTable table = context.ExecuteDataQueryProcedure
+                        (
+                            procedure: "deleteProject",
+                            parameters: new Dictionary<string, object>()
+                            {
+                                { "_projectId", projectId},
+                            },
+                            message: out string message
+                        );
+                    if (table == null)
+                        throw new Exception(message);
+
+                    statusResponse = new StatusResponse("Project delete sucessfull");
+                    return true;
+                }
+
+            }
+            catch (Exception exception)
+            {
+                statusResponse = new StatusResponse(exception);
+                return false;
+            }
+
+        }
+            
     }
 }

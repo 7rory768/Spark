@@ -46,5 +46,30 @@ namespace Spark.ControllerHelpers
             var instances = DatabaseLibrary.Helpers.ProjectDBHelper.GetTeamProjects(id, context, out StatusResponse statusResponse);
             return getResponse(instances, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while getting the projects.");
         }
+
+        //Update the information for a project
+        public static ResponseMessage Update(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            // Extract paramters
+            int projectId = data["projectId"].Value<int>();
+            int teamId = data["teamId"].Value<int>();
+            string name = data["name"].Value<string>();
+            int budget = data["budget"].Value<int>();
+
+            var instance = DatabaseLibrary.Helpers.ProjectDBHelper.Update(user.username, projectId,  teamId, name, budget, context, out StatusResponse statusResponse);
+            return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while updating a the user's information.");
+        }
+
+        //Delete a project
+        public static ResponseMessage Delete(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        {
+            // Extract paramters
+            int projectId = data["projectId"].Value<int>();
+            int teamId = data["teamId"].Value<int>();
+
+            bool success = DatabaseLibrary.Helpers.ProjectDBHelper.Delete(user.username, projectId, teamId, context, out StatusResponse statusResponse);
+            return getResponse(success, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while updating a the user's information.");
+        }
+        
     }
 }

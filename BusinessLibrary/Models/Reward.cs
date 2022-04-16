@@ -5,10 +5,12 @@ namespace BusinessLibrary.Models
 {
     public class Reward
     {
-        public Reward(string username, int numPoints, DateTime dateGiven)
+        public Reward(string username, int numPoints, int teamId, int projectId, DateTime dateGiven)
         {
             this.username = username;
             this.numPoints = numPoints;
+            this.teamId = teamId;
+            this.projectId = projectId;
             this.dateGiven = dateGiven;
         }
 

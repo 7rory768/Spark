@@ -82,5 +82,30 @@ namespace Spark.Controllers
             return response;
         }
 
+        // Modifies a projects information
+        [HttpPost]
+        [Route("update")]
+        public ResponseMessage UpdateProject([FromBody] JObject data)
+        {
+            var response = ProjectHelper.Update(getUser(), data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
+
+        // Modifies a projects information
+        [HttpPost]
+        [Route("delete")]
+        public ResponseMessage DeleteProject([FromBody] JObject data)
+        {
+            var response = ProjectHelper.Delete(getUser(), data,
+                context: Database.DbContext,
+                statusCode: out HttpStatusCode statusCode,
+                includeDetailedErrors: HostingEnvironment.IsDevelopment());
+            HttpContext.Response.StatusCode = (int)statusCode;
+            return response;
+        }
     }
 }
