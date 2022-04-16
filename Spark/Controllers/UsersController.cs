@@ -22,7 +22,7 @@ namespace Spark.Controllers
             // Initalize values in SparkControllerBase
         }
 
-        // Gets all users (just for testing)
+        // Gets all users
         [HttpGet]
         public ResponseMessage GetUsers()
         {

@@ -274,18 +274,17 @@ namespace DatabaseLibrary.Helpers
         /// <summary>
         /// Retrieves a list of instances.
         /// </summary>
-        public static List<User> GetCollection(
-            DbContext context, out StatusResponse statusResponse)
+        public static List<User> GetCollection(DbContext context, out StatusResponse statusResponse)
         {
+            List<User> instances = new List<User>();
             try
             {
                 // Get from database
                 DataTable table = context.ExecuteDataQueryCommand
                     (
-                        commandText: "SELECT * FROM users",
+                        commandText: "getAllUsers",
                         parameters: new Dictionary<string, object>()
                         {
-
                         },
                         message: out string message
                     );
@@ -293,7 +292,6 @@ namespace DatabaseLibrary.Helpers
                     throw new Exception(message);
 
                 // Parse data
-                List<User> instances = new List<User>();
                 foreach (DataRow row in table.Rows)
                     instances.Add(fromRow(row));
 
