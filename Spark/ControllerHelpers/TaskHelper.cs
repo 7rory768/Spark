@@ -2,6 +2,7 @@
 using DatabaseLibrary.Core;
 using Newtonsoft.Json.Linq;
 using System.Net;
+using Task = BusinessLibrary.Models.Task;
 
 namespace Spark.ControllerHelpers
 {
@@ -33,21 +34,9 @@ namespace Spark.ControllerHelpers
             var instance = DatabaseLibrary.Helpers.TaskDBHelper.Add(projectId, listId, name, description, deadline, completionPoints, assignedUsers, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a task.");
         }
-        public static ResponseMessage Update(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+        public static ResponseMessage Update(User user, Task task, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
-            if (!ContainsRequiredKeys(data, "id", "name", "description", "completionPoints", "completed"))
-                return GetMissingKeysResponse(data, out statusCode, includeDetailedErrors, "id", "name", "description", "completionPoints", "completed");
-
-            // Extract paramters
-            int id = data["id"].Value<int>();
-            string name = data["name"].Value<string>();
-            string description = data["description"].Value<string>();
-            data.TryGetValue("deadline", out JToken deadline);
-            int completionPoints = data["completionPoints"].Value<int>();
-            bool completed = data["completed"].Value<bool>();
-
-
-            var instance = DatabaseLibrary.Helpers.TaskDBHelper.Update(id, name, description, deadline?.Value<DateOnly>("deadline"), completionPoints, completed, context, out StatusResponse statusResponse);
+            var instance = DatabaseLibrary.Helpers.TaskDBHelper.Update(user, task, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a task.");
         }
 

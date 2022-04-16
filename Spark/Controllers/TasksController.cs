@@ -35,11 +35,11 @@ namespace Spark.Controllers
         // Moves a task
         [HttpPost]
         [Route("update")]
-        public ResponseMessage Update([FromBody] JObject data)
+        public ResponseMessage Update([FromBody] Task task)
         {
             if (!isAuthenticated()) return getNotAuthenticatedResponse();
 
-            var response = TaskHelper.Update(getUser(), data,
+            var response = TaskHelper.Update(getUser(), task,
                 context: Database.DbContext,
                 statusCode: out HttpStatusCode statusCode,
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());
