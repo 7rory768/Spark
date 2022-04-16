@@ -24,7 +24,6 @@ namespace Spark.Controllers
 
         // Gets all users
         [HttpGet]
-        [Route("viewUsers")]
         public ResponseMessage GetUsers()
         {
             var response = UserHelper.GetCollection(

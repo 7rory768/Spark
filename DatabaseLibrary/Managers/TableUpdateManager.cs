@@ -328,6 +328,7 @@ END;");
 			BEGIN
 
 				INSERT INTO `teams` (`name`, `mgrUsername`) VALUES (_name, _mgrUsername);
+				INSERT INTO `team_members` (`teamId`, `username`) VALUES (@@IDENTITY, _mgrUsername);
 
 				SELECT * FROM `teams` WHERE id = @@IDENTITY;
 	
