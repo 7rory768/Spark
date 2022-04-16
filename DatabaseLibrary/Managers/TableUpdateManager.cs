@@ -315,6 +315,13 @@ END;");
 				SELECT projects.* FROM `projects` AS projects INNER JOIN `teams` AS teams ON(projects.teamId = teams.id) WHERE teams.id = _teamId;
 
 			END;");
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteProject`;
+			CREATE PROCEDURE IF NOT EXISTS `deleteProject`(IN _projectId INT)
+BEGIN
+
+			DELETE FROM `projects` WHERE `id` = _projectId;
+
+			END;");
 
             procedures.Add(@"DROP PROCEDURE IF EXISTS `deleteTeam`; CREATE PROCEDURE IF NOT EXISTS `deleteTeam`(IN _id INT)
 			BEGIN
@@ -337,7 +344,7 @@ END;");
 
             procedures.Add(@"DROP PROCEDURE IF EXISTS `getAllUsers`; 
 			CREATE PROCEDURE IF NOT EXISTS `getAllUsers`()
-			BEGIN
+BEGIN
 
 				SELECT * FROM users;
 	
@@ -353,7 +360,15 @@ END;");
 	
 			END;");
 
-			foreach (string query in procedures)
+			procedures.Add(@"DROP PROCEDURE IF EXISTS `updateProject`;
+			CREATE PROCEDURE IF NOT EXISTS `updateProject`(IN _projectId INT, IN _teamId INT, IN _name varchar(255), IN _budget INT)
+BEGIN
+			UPDATE `projects` SET `teamId` = _teamId, `name` = _name, `budget` = _budget WHERE `id` = _projectId;
+
+			SELECT* FROM `projects` WHERE `id` = _projectId;
+
+			END;");
+
             procedures.Add(@"DROP PROCEDURE IF EXISTS `createChecklist`; CREATE PROCEDURE IF NOT EXISTS `createChecklist`(IN `_taskId` INT, IN _title VARCHAR(255))
 BEGIN
 
