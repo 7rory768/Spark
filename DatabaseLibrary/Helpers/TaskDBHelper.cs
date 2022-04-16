@@ -163,7 +163,7 @@ namespace DatabaseLibrary.Helpers
                 int taskId = int.Parse(table.Rows[0]["id"].ToString());
 
                 foreach (string username in assignedUsers)
-                    assignToTask(taskId, username, context, out statusResponse);
+                    assignToTask(taskId, username, context);
 
                 statusResponse = new StatusResponse("Created task successfully");
                 return fromRow(table.Rows[0], context);
@@ -211,7 +211,56 @@ namespace DatabaseLibrary.Helpers
 
                 Task newTask = fromRow(table.Rows[0], context);
 
-                // COMPARE CHANGES
+                // COMPARE ASSIGNED USERS
+                for (int index = newTask.assignedUsers.Count - 1; index >= 0; index--)
+                {
+                    User oldUser = newTask.assignedUsers[index];
+                    bool existsInUpdate = false;
+
+                    foreach (User updateUser in task.assignedUsers)
+                    {
+                        if (updateUser.username.Equals(oldUser.username))
+                        {
+                            existsInUpdate = true;
+                            break;
+                        }
+                    }
+
+                    if (!existsInUpdate)
+                    {
+                        // UNASSIGN USER
+                        if (unassignFromTask(task.id, oldUser.username, context))
+                        {
+                            newTask.assignedUsers.RemoveAt(index);
+                        }
+                    }
+                }
+
+                foreach (User updateUser in task.assignedUsers)
+                {
+                    bool newUser = true;
+
+                    foreach (User oldUser in newTask.assignedUsers)
+                    {
+                        if (oldUser.username.Equals(updateUser.username))
+                        {
+                            newUser = false;
+                            break;
+                        }
+                    }
+
+                    // ASSIGN USER
+                    if (newUser)
+                    {
+                        if (assignToTask(task.id, updateUser.username, context))
+                        {
+                            newTask.assignedUsers.Add(updateUser);
+                        }
+
+                    }
+                }
+
+                // COMPARE CHECKLIST CHANGES
 
                 for (int index = newTask.checklists.Count - 1; index >= 0; index--)
                 {
@@ -455,71 +504,52 @@ namespace DatabaseLibrary.Helpers
             return true;
         }
 
-        public static Task? assignToTask(int taskId, string username, DbContext context, out StatusResponse statusResponse)
+        public static bool assignToTask(int taskId, string username, DbContext context)
         {
-            try
+            if (isNotAlphaNumeric(false, username))
             {
-                if (isNotAlphaNumeric(false, username))
-                {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
-                }
+                throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
+            }
 
-                // Add to database
-                DataTable table = context.ExecuteDataQueryProcedure
-                    (
-                        procedure: "assignToTask",
-                        parameters: new Dictionary<string, object>()
-                        {
+            // Add to database
+            DataTable table = context.ExecuteDataQueryProcedure
+                (
+                    procedure: "assignToTask",
+                    parameters: new Dictionary<string, object>()
+                    {
                             { "_taskId", taskId },
                             { "_username", username},
-                        },
-                        message: out string message
-                    );
-                if (table == null)
-                    throw new Exception(message);
+                    },
+                    message: out string message
+                );
+            if (table == null)
+                throw new Exception(message);
 
-                statusResponse = new StatusResponse(string.Format("Assigned {0} to task {1} successfully", username, taskId));
-                return fromRow(table.Rows[0], context);
-            }
-            catch (Exception exception)
-            {
-                statusResponse = new StatusResponse(exception);
-                return null;
-            }
+            return true;
         }
 
-        public static Task? unassignFromTask(int taskId, string username, DbContext context, out StatusResponse statusResponse)
+        public static bool unassignFromTask(int taskId, string username, DbContext context)
         {
-            try
+            if (isNotAlphaNumeric(false, username))
             {
-                if (isNotAlphaNumeric(false, username))
-                {
-                    throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
-                }
+                throw new StatusException(HttpStatusCode.BadRequest, "Please provide a valid username");
+            }
 
-                // Add to database
-                DataTable table = context.ExecuteDataQueryProcedure
-                    (
-                        procedure: "unassignFromTask",
-                        parameters: new Dictionary<string, object>()
-                        {
+            // Add to database
+            DataTable table = context.ExecuteDataQueryProcedure
+                (
+                    procedure: "unassignFromTask",
+                    parameters: new Dictionary<string, object>()
+                    {
                             { "_taskId", taskId },
                             { "_username", username},
-                        },
-                        message: out string message
-                    );
-                if (table == null)
-                    throw new Exception(message);
+                    },
+                    message: out string message
+                );
+            if (table == null)
+                throw new Exception(message);
 
-                statusResponse = new StatusResponse(string.Format("Unassigned {0} from task {1} successfully", username, taskId));
-
-                return fromRow(table.Rows[0], context);
-            }
-            catch (Exception exception)
-            {
-                statusResponse = new StatusResponse(exception);
-                return null;
-            }
+            return true;
         }
 
         public static Task? moveTask(int taskId, int listId, int newPriority, DbContext context, out StatusResponse statusResponse)

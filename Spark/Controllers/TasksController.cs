@@ -48,7 +48,7 @@ namespace Spark.Controllers
         }
 
         // Assigns a user to a task
-        [HttpPost]
+/*        [HttpPost]
         [Route("assign")]
         public ResponseMessage AssignToTask([FromBody] JObject data)
         {
@@ -75,7 +75,7 @@ namespace Spark.Controllers
                 includeDetailedErrors: HostingEnvironment.IsDevelopment());
             HttpContext.Response.StatusCode = (int)statusCode;
             return response;
-        }
+        }*/
 
         // Moves a task
         [HttpPost]

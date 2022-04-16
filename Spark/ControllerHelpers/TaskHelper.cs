@@ -40,7 +40,7 @@ namespace Spark.ControllerHelpers
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while adding a task.");
         }
 
-        public static ResponseMessage AssignToTask(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
+/*        public static ResponseMessage AssignToTask(JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
             if (!ContainsRequiredKeys(data, "id", "username"))
                 return GetMissingKeysResponse(data, out statusCode, includeDetailedErrors, "id", "username");
@@ -64,7 +64,7 @@ namespace Spark.ControllerHelpers
 
             var instance = DatabaseLibrary.Helpers.TaskDBHelper.unassignFromTask(id, username, context, out StatusResponse statusResponse);
             return getResponse(instance, out statusCode, statusResponse, includeDetailedErrors, "Something went wrong while unassigning the user from the task.");
-        }
+        }*/
 
         public static ResponseMessage MoveTask(User user, JObject data, DbContext context, out HttpStatusCode statusCode, bool includeDetailedErrors = false)
         {
